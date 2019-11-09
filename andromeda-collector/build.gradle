@@ -1,0 +1,33 @@
+plugins {
+    id 'org.springframework.boot' version '2.2.0.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'java'
+    id 'idea'
+    id 'com.google.cloud.tools.jib' version '1.7.0'
+
+}
+
+group = 'net.igiari'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'io.fabric8:kubernetes-client:4.6.2'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'io.fabric8:kubernetes-server-mock:4.6.2'
+    testImplementation("org.assertj:assertj-core:3.11.1")
+
+    annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
+}
+
+test {
+    useJUnitPlatform()
+}

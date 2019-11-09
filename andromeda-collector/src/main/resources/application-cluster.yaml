@@ -1,0 +1,5 @@
+cluster:
+  namespaceSuffixes:
+    - -test
+    - -dev
+    - -prod

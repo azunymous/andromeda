@@ -1,0 +1,18 @@
+global:
+  teams:
+    - name: galaxy
+      applications:
+        - name: solar
+          prefix: solar
+          selector:
+            app: solar
+          deployment: solar
+        - name: milkyway
+          prefix: milkyway
+          selector:
+            app: app
+    - name: acme
+      applications:
+        - name: dynamite
+          prefix: dyn
+#         selector is defaulted to 'app = application name' - in this case app = dynamite
