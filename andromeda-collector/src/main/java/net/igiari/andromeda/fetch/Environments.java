@@ -18,6 +18,7 @@ public class Environments {
   }
 
   public Optional<Environment> getEnvironment(
+      String environmentName,
       String namespaceName,
       PodControllerType type,
       Map<String, String> selector,
@@ -30,7 +31,7 @@ public class Environments {
         getPodController(namespaceName, type, selector, containerName)
             .orElse(PodController.empty());
 
-    Environment environment = new Environment(namespaceName, podController);
+    Environment environment = new Environment(environmentName, namespaceName, podController);
     return Optional.of(environment);
   }
 

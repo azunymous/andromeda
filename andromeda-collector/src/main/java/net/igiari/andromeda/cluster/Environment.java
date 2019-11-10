@@ -3,10 +3,12 @@ package net.igiari.andromeda.cluster;
 import java.util.Objects;
 
 public class Environment {
+  private final String environmentName;
   private final String namespaceName;
   private final PodController podController;
 
-  public Environment(String namespaceName, PodController podController) {
+  public Environment(String environmentName, String namespaceName, PodController podController) {
+    this.environmentName = environmentName;
     this.namespaceName = namespaceName;
     this.podController = podController;
   }
@@ -17,6 +19,10 @@ public class Environment {
 
   public PodController getPodController() {
     return podController;
+  }
+
+  public String getEnvironmentName() {
+    return environmentName;
   }
 
   @Override

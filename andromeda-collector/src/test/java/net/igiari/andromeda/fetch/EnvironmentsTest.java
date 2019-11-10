@@ -17,10 +17,11 @@ import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class EnvironmentsTest {
-  private static final String NAMESPACE = "ns1";
+  private static final String NAMESPACE = "ns1-env";
   private static final String CONTROLLER_NAME = "deploymentName";
   private static final String CONTAINER_NAME = "deploymentName";
   private static final Map<String, String> APP_LABEL = singletonMap("app", "appLabel");
+  public static final String ENV = "env";
 
   @Rule
   public KubernetesServer server = new KubernetesServer(true, true);
@@ -39,14 +40,14 @@ class EnvironmentsTest {
   void getEnvironment() {
     createNamespace(NAMESPACE);
 
-    Optional<Environment> gotEnvironment = environments.getEnvironment(NAMESPACE, PodControllerType.DEPLOYMENT, APP_LABEL, CONTAINER_NAME);
-    Environment expectedEnvironment = new Environment(NAMESPACE, new PodController(CONTROLLER_NAME, emptyList(), PodControllerType.DEPLOYMENT));
+    Optional<Environment> gotEnvironment = environments.getEnvironment(ENV, NAMESPACE, PodControllerType.DEPLOYMENT, APP_LABEL, CONTAINER_NAME);
+    Environment expectedEnvironment = new Environment(ENV, NAMESPACE, new PodController(CONTROLLER_NAME, emptyList(), PodControllerType.DEPLOYMENT));
     assertThat(gotEnvironment).contains(expectedEnvironment);
   }
 
   @Test
   void getEnvironmentWithoutNamespace() {
-    assertThat(environments.getEnvironment(NAMESPACE, PodControllerType.DEPLOYMENT, APP_LABEL, CONTAINER_NAME)).isEmpty();
+    assertThat(environments.getEnvironment(ENV, NAMESPACE, PodControllerType.DEPLOYMENT, APP_LABEL, CONTAINER_NAME)).isEmpty();
   }
 
   private void createNamespace(String namespace) {
