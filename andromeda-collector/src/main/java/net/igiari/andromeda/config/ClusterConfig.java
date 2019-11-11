@@ -9,6 +9,7 @@ import java.util.List;
 @ConfigurationProperties("cluster")
 public class ClusterConfig {
   private List<String> namespaceSuffixes;
+  private PriorityConfig priority;
 
   public ClusterConfig() {}
 
@@ -18,5 +19,13 @@ public class ClusterConfig {
 
   public void setNamespaceSuffixes(List<String> namespaceSuffixes) {
     this.namespaceSuffixes = namespaceSuffixes;
+  }
+
+  public PriorityConfig getPriority() {
+    return priority;
+  }
+
+  public void setPriority(PriorityConfig priority) {
+    this.priority = priority;
   }
 }

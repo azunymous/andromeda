@@ -8,7 +8,7 @@ import static java.util.Collections.singletonMap;
 import static net.igiari.andromeda.cluster.PodControllerType.DEPLOYMENT;
 import static net.igiari.andromeda.cluster.PodControllerType.STATEFULSET;
 
-public class Application {
+public class ApplicationConfig {
   private String name;
   // Namespace Prefix
   private String prefix;
@@ -17,7 +17,7 @@ public class Application {
   private String deployment;
   private String statefulSet;
 
-  public Application() {}
+  public ApplicationConfig() {}
 
   public String getName() {
     return name;

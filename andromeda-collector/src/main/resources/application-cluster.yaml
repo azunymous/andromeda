@@ -1,5 +1,12 @@
 cluster:
   namespaceSuffixes:
-    - -test
+    - -ft
+    - -testing
     - -dev
     - -prod
+  priority:
+    first:
+      - -dev
+      - -ft
+    last:
+      - -prod

@@ -8,13 +8,18 @@ import net.igiari.andromeda.cluster.PodControllerType;
 import java.util.Map;
 import java.util.Optional;
 
-public class Environments {
-  private KubernetesClient kubernetesClient;
-  private PodControllers podControllers;
+import static net.igiari.andromeda.cluster.PodController.empty;
 
-  public Environments(KubernetesClient kubernetesClient, PodControllers podControllers) {
+public class EnvironmentsClient {
+  private KubernetesClient kubernetesClient;
+  private PodControllersClient podControllersClient;
+  private PodsClient podsClient;
+
+  public EnvironmentsClient(
+      KubernetesClient kubernetesClient, PodControllersClient podControllersClient, PodsClient podsClient) {
     this.kubernetesClient = kubernetesClient;
-    this.podControllers = podControllers;
+    this.podControllersClient = podControllersClient;
+    this.podsClient = podsClient;
   }
 
   public Optional<Environment> getEnvironment(
@@ -27,11 +32,11 @@ public class Environments {
       return Optional.empty();
     }
 
-    PodController podController =
-        getPodController(namespaceName, type, selector, containerName)
-            .orElse(PodController.empty());
+    Optional<PodController> podController =
+        getPodController(namespaceName, type, selector, containerName);
+    podController.ifPresent(pc -> pc.setPods(podsClient.getPods(namespaceName, selector, containerName)));
 
-    Environment environment = new Environment(environmentName, namespaceName, podController);
+    Environment environment = new Environment(environmentName, namespaceName, podController.orElse(empty()));
     return Optional.of(environment);
   }
 
@@ -42,9 +47,9 @@ public class Environments {
       String containerName) {
     switch (type) {
       case DEPLOYMENT:
-        return podControllers.getDeployment(namespaceName, selector, containerName);
+        return podControllersClient.getDeployment(namespaceName, selector, containerName);
       case STATEFULSET:
-        return podControllers.getStatefulSet(namespaceName, selector, containerName);
+        return podControllersClient.getStatefulSet(namespaceName, selector, containerName);
     }
     return Optional.empty();
   }

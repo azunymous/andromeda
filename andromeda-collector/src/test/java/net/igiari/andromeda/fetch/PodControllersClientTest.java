@@ -20,7 +20,7 @@ import static net.igiari.andromeda.cluster.PodControllerType.DEPLOYMENT;
 import static net.igiari.andromeda.cluster.PodControllerType.STATEFULSET;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class PodControllersTest {
+class PodControllersClientTest {
   private static final String NAMESPACE = "ns1";
   private static final String CONTROLLER_NAME = "deploymentName";
   private static final String CONTAINER_NAME = "deploymentName";
@@ -29,7 +29,7 @@ class PodControllersTest {
 
   @Rule public KubernetesServer server = new KubernetesServer(true, true);
 
-  private PodControllers podControllers;
+  private PodControllersClient podControllersClient;
 
   @BeforeEach
   void setUp() {
@@ -42,7 +42,7 @@ class PodControllersTest {
         .withName(NAMESPACE)
         .endMetadata()
         .done();
-    podControllers = new PodControllers(server.getClient());
+    podControllersClient = new PodControllersClient(server.getClient());
   }
 
   @Test
@@ -50,7 +50,7 @@ class PodControllersTest {
     givenDeployment().done();
 
     Optional<PodController> gotPodController =
-        podControllers.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME);
+        podControllersClient.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME);
 
     PodController expectedPodController =
         new PodController(CONTROLLER_NAME, emptyList(), DEPLOYMENT);
@@ -62,7 +62,7 @@ class PodControllersTest {
     givenStatefulSet().done();
 
     Optional<PodController> gotPodController =
-        podControllers.getStatefulSet(NAMESPACE, SELECTOR, CONTAINER_NAME);
+        podControllersClient.getStatefulSet(NAMESPACE, SELECTOR, CONTAINER_NAME);
 
     PodController expectedPodController =
         new PodController(CONTROLLER_NAME, emptyList(), STATEFULSET);
@@ -79,7 +79,7 @@ class PodControllersTest {
         .endStatus()
         .done();
 
-    assertThat(podControllers.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(podControllersClient.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.UNAVAILABLE);
   }
@@ -94,7 +94,7 @@ class PodControllersTest {
         .endStatus()
         .done();
 
-    assertThat(podControllers.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(podControllersClient.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.LIVE);
   }
@@ -109,7 +109,7 @@ class PodControllersTest {
         .endStatus()
         .done();
 
-    assertThat(podControllers.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(podControllersClient.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.LIVE);
   }
@@ -124,7 +124,7 @@ class PodControllersTest {
         .endStatus()
         .done();
 
-    assertThat(podControllers.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(podControllersClient.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.READY);
   }
@@ -133,7 +133,7 @@ class PodControllersTest {
   void scaledDownStatusWhenNoReplicasExpected_deployment() {
     givenDeployment().editOrNewSpec().withReplicas(0).endSpec().done();
 
-    assertThat(podControllers.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(podControllersClient.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.SCALED_DOWN);
   }
@@ -147,7 +147,7 @@ class PodControllersTest {
         .endStatus()
         .done();
 
-    assertThat(podControllers.getStatefulSet(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(podControllersClient.getStatefulSet(NAMESPACE, SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.UNAVAILABLE);
   }
@@ -161,7 +161,7 @@ class PodControllersTest {
         .endStatus()
         .done();
 
-    assertThat(podControllers.getStatefulSet(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(podControllersClient.getStatefulSet(NAMESPACE, SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.LIVE);
   }
@@ -175,7 +175,7 @@ class PodControllersTest {
         .endStatus()
         .done();
 
-    assertThat(podControllers.getStatefulSet(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(podControllersClient.getStatefulSet(NAMESPACE, SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.LIVE);
   }
@@ -189,7 +189,7 @@ class PodControllersTest {
         .endStatus()
         .done();
 
-    assertThat(podControllers.getStatefulSet(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(podControllersClient.getStatefulSet(NAMESPACE, SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.READY);
   }
@@ -198,7 +198,7 @@ class PodControllersTest {
   void scaledDownStatusWhenNoReplicasExpected_statefulSet() {
     givenStatefulSet().editOrNewSpec().withReplicas(0).endSpec().done();
 
-    assertThat(podControllers.getStatefulSet(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(podControllersClient.getStatefulSet(NAMESPACE, SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.SCALED_DOWN);
   }
@@ -207,7 +207,7 @@ class PodControllersTest {
   void getVersion() {
     givenDeployment().done();
 
-    assertThat(podControllers.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(podControllersClient.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("version", "1.22.333");
   }
@@ -226,7 +226,7 @@ class PodControllersTest {
         .endSpec()
         .done();
 
-    assertThat(podControllers.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(podControllersClient.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("version", "hash1234");
   }

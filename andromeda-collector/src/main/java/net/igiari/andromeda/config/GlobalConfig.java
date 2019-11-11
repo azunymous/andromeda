@@ -8,15 +8,15 @@ import java.util.List;
 @Component
 @ConfigurationProperties("global")
 public class GlobalConfig {
-  private List<Team> teams;
+  private List<TeamConfig> teams;
 
   public GlobalConfig() {}
 
-  public List<Team> getTeams() {
+  public List<TeamConfig> getTeams() {
     return teams;
   }
 
-  public void setTeams(List<Team> teams) {
-    this.teams = teams;
+  public void setTeams(List<TeamConfig> teamConfigs) {
+    this.teams = teamConfigs;
   }
 }

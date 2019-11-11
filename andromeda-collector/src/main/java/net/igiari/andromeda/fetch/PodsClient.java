@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Pods {
+public class PodsClient {
 
   private final KubernetesClient kubernetesClient;
 
-  public Pods(KubernetesClient kubernetesClient) {
+  public PodsClient(KubernetesClient kubernetesClient) {
     this.kubernetesClient = kubernetesClient;
   }
 
@@ -28,10 +28,10 @@ public class Pods {
 
   private Pod createPodFrom(io.fabric8.kubernetes.api.model.Pod pod, String containerName) {
     String version =
-        PodControllers.determineVersionFrom(pod.getSpec().getContainers(), containerName)
+        PodControllersClient.determineVersionFrom(pod.getSpec().getContainers(), containerName)
             .orElse(PodController.UNKNOWN_VERSION);
     Status status = determineStatusFrom(pod);
-    return new Pod(pod.getMetadata().getName(), version, Status.UNKNOWN);
+    return new Pod(pod.getMetadata().getName(), version, status);
   }
 
   private Status determineStatusFrom(io.fabric8.kubernetes.api.model.Pod pod) {

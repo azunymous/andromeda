@@ -30,8 +30,8 @@ public class Environment {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Environment that = (Environment) o;
-    return Objects.equals(namespaceName, that.namespaceName) &&
-        Objects.equals(podController, that.podController);
+    return Objects.equals(namespaceName, that.namespaceName)
+        && Objects.equals(podController, that.podController);
   }
 
   @Override
@@ -41,9 +41,12 @@ public class Environment {
 
   @Override
   public String toString() {
-    return "Environment{" +
-        "namespaceName='" + namespaceName + '\'' +
-        ", podController=" + podController +
-        '}';
+    return "Environment{"
+        + "namespaceName='"
+        + namespaceName
+        + '\''
+        + ", podController="
+        + podController
+        + '}';
   }
 }

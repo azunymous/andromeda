@@ -2,11 +2,11 @@ package net.igiari.andromeda.config;
 
 import java.util.List;
 
-public class Team {
+public class TeamConfig {
   private String name;
-  private List<Application> applications;
+  private List<ApplicationConfig> applications;
 
-  public Team() {}
+  public TeamConfig() {}
 
   public String getName() {
     return name;
@@ -16,11 +16,11 @@ public class Team {
     this.name = name;
   }
 
-  public List<Application> getApplications() {
+  public List<ApplicationConfig> getApplications() {
     return applications;
   }
 
-  public void setApplications(List<Application> applications) {
+  public void setApplications(List<ApplicationConfig> applications) {
     this.applications = applications;
   }
 }

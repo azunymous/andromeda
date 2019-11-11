@@ -2,6 +2,8 @@ global:
   teams:
     - name: galaxy
       applications:
+        - name: alice
+          prefix: alice
         - name: solar
           prefix: solar
           selector:
