@@ -22,6 +22,9 @@ public class ClusterConfig {
   }
 
   public PriorityConfig getPriority() {
+    if (priority == null) {
+      return new PriorityConfig();
+    }
     return priority;
   }
 

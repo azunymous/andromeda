@@ -1,11 +1,11 @@
 package net.igiari.andromeda.controllers;
 
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import net.igiari.andromeda.cluster.Team;
 import net.igiari.andromeda.config.ClusterConfig;
 import net.igiari.andromeda.config.GlobalConfig;
 import net.igiari.andromeda.fetch.ApplicationsClient;
+import net.igiari.andromeda.fetch.Client;
 import net.igiari.andromeda.fetch.EnvironmentsClient;
 import net.igiari.andromeda.fetch.PodControllersClient;
 import net.igiari.andromeda.fetch.PodsClient;
@@ -21,11 +21,11 @@ public class AndromedaController {
   private final ClusterConfig clusterConfig;
   private final TeamsClient teamsClient;
 
-  public AndromedaController(GlobalConfig globalConfig, ClusterConfig clusterConfig) {
+  public AndromedaController(GlobalConfig globalConfig, ClusterConfig clusterConfig, Client client) {
     this.globalConfig = globalConfig;
     this.clusterConfig = clusterConfig;
-    KubernetesClient kubernetesClient = new DefaultKubernetesClient();
 
+    KubernetesClient kubernetesClient = client.getKubernetesClient();
     PodControllersClient podControllersClient = new PodControllersClient(kubernetesClient);
     PodsClient podsClient = new PodsClient(kubernetesClient);
     EnvironmentsClient environmentsClient =

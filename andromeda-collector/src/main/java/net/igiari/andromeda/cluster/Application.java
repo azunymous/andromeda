@@ -1,6 +1,7 @@
 package net.igiari.andromeda.cluster;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Application {
   private String name;
@@ -25,5 +26,27 @@ public class Application {
 
   public void setEnvironments(List<Environment> environments) {
     this.environments = environments;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Application that = (Application) o;
+    return Objects.equals(name, that.name) &&
+        Objects.equals(environments, that.environments);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, environments);
+  }
+
+  @Override
+  public String toString() {
+    return "Application{" +
+        "name='" + name + '\'' +
+        ", environments=" + environments +
+        '}';
   }
 }

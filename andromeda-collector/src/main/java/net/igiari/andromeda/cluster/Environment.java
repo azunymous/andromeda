@@ -25,6 +25,9 @@ public class Environment {
     return environmentName;
   }
 
+  public boolean hasSameNamespace(Environment environment2) {
+    return this.getNamespaceName().equals(environment2.getNamespaceName());
+  }
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;

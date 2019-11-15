@@ -18,7 +18,7 @@ import static net.igiari.andromeda.cluster.PodController.UNKNOWN_VERSION;
 import static net.igiari.andromeda.cluster.PodControllerType.DEPLOYMENT;
 
 public class PodControllersClient {
-  private static final Pattern versionRegex = Pattern.compile("(\\d+\\.\\d+\\.\\d+)");
+  private static final Pattern versionRegex = Pattern.compile("v(\\d+\\.\\d+\\.\\d+)");
   private static final Pattern hashRegex = Pattern.compile(".*:(.{4,8}).*");
   private KubernetesClient kubernetesClient;
 

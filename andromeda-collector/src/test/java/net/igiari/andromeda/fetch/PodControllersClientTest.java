@@ -25,7 +25,7 @@ class PodControllersClientTest {
   private static final String CONTROLLER_NAME = "deploymentName";
   private static final String CONTAINER_NAME = "deploymentName";
   private static final Map<String, String> SELECTOR = singletonMap("app", "appLabel");
-  private static final String IMAGE = "host/path/imageName:1.22.333";
+  private static final String IMAGE = "host/path/imageName:v1.22.333";
 
   @Rule public KubernetesServer server = new KubernetesServer(true, true);
 

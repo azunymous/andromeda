@@ -23,6 +23,7 @@ public class PodsClient {
     return kubernetesClient.pods().inNamespace(namespaceName).withLabels(selector).list().getItems()
         .stream()
         .map((io.fabric8.kubernetes.api.model.Pod pod) -> createPodFrom(pod, containerName))
+        .sorted(Pod::byName)
         .collect(Collectors.toUnmodifiableList());
   }
 
