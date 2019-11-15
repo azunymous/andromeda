@@ -1,0 +1,4 @@
+aggregator:
+  clusters:
+    - name: dev
+      collector: http://collector:8080
