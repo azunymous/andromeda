@@ -1,6 +1,7 @@
 package net.igiari.andromeda.collector.clients;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClientException;
 import net.igiari.andromeda.collector.cluster.Environment;
 import net.igiari.andromeda.collector.cluster.PodController;
 import net.igiari.andromeda.collector.cluster.PodControllerType;
@@ -55,6 +56,10 @@ public class EnvironmentsClient {
   }
 
   private boolean namespaceExists(String namespaceName) {
-    return kubernetesClient.namespaces().withName(namespaceName).get() != null;
+    try {
+      return kubernetesClient.namespaces().withName(namespaceName).get() != null;
+    } catch (KubernetesClientException kce) {
+      return false;
+    }
   }
 }
