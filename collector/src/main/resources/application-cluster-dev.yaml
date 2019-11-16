@@ -1,0 +1,6 @@
+cluster:
+  namespaceSuffixes:
+    - -dev
+  priority:
+    first:
+      - -dev

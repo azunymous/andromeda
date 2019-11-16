@@ -1,0 +1,11 @@
+apiVersion: skaffold/v1
+kind: Config
+metadata:
+  name: andromeda
+build:
+  artifacts:
+    - image: collector
+      jib:
+        project: collector
+deploy:
+  kustomize: {}

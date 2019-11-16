@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: collector
+spec:
+  template:
+    spec:
+      containers:
+        - name: collector
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: cluster-dev, global

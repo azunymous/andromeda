@@ -1,18 +1,5 @@
 global:
   teams:
-    - name: galaxy
-      applications:
-        - name: alice
-          prefix: alice
-        - name: solar
-          prefix: solar
-          selector:
-            app: solar
-          deployment: solar
-        - name: milkyway
-          prefix: milkyway
-          selector:
-            app: app
     - name: andromeda
       applications:
         - name: collector
