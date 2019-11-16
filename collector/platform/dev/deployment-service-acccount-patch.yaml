@@ -5,8 +5,6 @@ metadata:
 spec:
   template:
     spec:
+      serviceAccountName: monitoring
       containers:
         - name: collector
-          env:
-            - name: SPRING_PROFILES_ACTIVE
-              value: cluster-dev, global-dev

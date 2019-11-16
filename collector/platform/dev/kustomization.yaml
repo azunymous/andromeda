@@ -5,5 +5,8 @@ namespace: andromeda-dev
 resources:
   - ../base
   - namespace.yml
+  - serviceaccount.yaml
+  - roles.yaml
 patchesStrategicMerge:
   - deployment-env-patch.yaml
+  - deployment-service-acccount-patch.yaml
