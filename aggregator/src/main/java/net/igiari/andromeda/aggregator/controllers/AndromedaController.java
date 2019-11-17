@@ -1,7 +1,9 @@
 package net.igiari.andromeda.aggregator.controllers;
 
+import net.igiari.andromeda.aggregator.clients.TeamDashboardServiceClient;
 import net.igiari.andromeda.aggregator.config.AggregatorConfig;
-import net.igiari.andromeda.collector.cluster.Team;
+import net.igiari.andromeda.aggregator.dashboard.TeamDashboard;
+import net.igiari.andromeda.aggregator.services.TeamDashboardService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,23 +12,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AndromedaController {
   private final AggregatorConfig aggregatorConfig;
-;
+  private final TeamDashboardService teamDashboardService;
 
-  public AndromedaController(AggregatorConfig aggregatorConfig) {
+  public AndromedaController(
+      AggregatorConfig aggregatorConfig, TeamDashboardServiceClient teamDashboardServiceClient) {
     this.aggregatorConfig = aggregatorConfig;
+    this.teamDashboardService = teamDashboardServiceClient.getTeamDashboardService();
   }
 
   @RequestMapping("/")
   public String index() {
-    return "Greetings from Kubernetes!";
+    return "Greetings from Andromeda aggregator!";
   }
 
   @GetMapping("/team/{teamName}")
-  public Team team(@PathVariable String teamName) {
-    return null;
+  public TeamDashboard team(@PathVariable String teamName) {
+    return teamDashboardService.createTeamDashboard(teamName);
   }
 
-  @GetMapping("/config/")
+  @GetMapping("/config")
   public AggregatorConfig aggregatorConfig() {
     return aggregatorConfig;
   }

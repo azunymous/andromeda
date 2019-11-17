@@ -3,20 +3,20 @@ package net.igiari.andromeda.aggregator.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.Map;
 
 @Component
 @ConfigurationProperties("aggregator")
 public class AggregatorConfig {
-  private List<ClusterConfig> clusters;
+  private Map<String, ClusterConfig> clusters;
 
   public AggregatorConfig() {}
 
-  public List<ClusterConfig> getClusters() {
+  public Map<String, ClusterConfig> getClusters() {
     return clusters;
   }
 
-  public void setClusters(List<ClusterConfig> clusters) {
+  public void setClusters(Map<String, ClusterConfig> clusters) {
     this.clusters = clusters;
   }
 }

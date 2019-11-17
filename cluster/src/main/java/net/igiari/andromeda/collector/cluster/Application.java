@@ -49,4 +49,8 @@ public class Application {
         ", environments=" + environments +
         '}';
   }
+
+  public static int byName(Application application1, Application application2) {
+    return application1.getName().compareTo(application2.getName());
+  }
 }

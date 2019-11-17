@@ -1,25 +1,27 @@
 package net.igiari.andromeda.aggregator.config;
 
+import java.util.List;
+
 public class ClusterConfig {
-  private String name;
-  private String collector;
+  private DataCenterType type;
+  private List<String> collectors;
 
   public ClusterConfig() {
   }
 
-  public String getName() {
-    return name;
+  public DataCenterType getType() {
+    return type;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setType(DataCenterType type) {
+    this.type = type;
   }
 
-  public String getCollector() {
-    return collector;
+  public List<String> getCollectors() {
+    return collectors;
   }
 
-  public void setCollector(String collector) {
-    this.collector = collector;
+  public void setCollectors(List<String> collectors) {
+    this.collectors = collectors;
   }
 }

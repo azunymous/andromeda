@@ -35,6 +35,8 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
+    testImplementation("org.assertj:assertj-core:3.11.1")
+    testImplementation 'com.pgs-soft:HttpClientMock:1.0.0'
 }
 
 test {
