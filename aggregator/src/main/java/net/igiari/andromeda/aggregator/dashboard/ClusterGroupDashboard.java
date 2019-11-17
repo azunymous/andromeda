@@ -6,6 +6,8 @@ import net.igiari.andromeda.collector.cluster.Team;
 import java.util.List;
 import java.util.Objects;
 
+import static java.util.Collections.emptyList;
+
 public class ClusterGroupDashboard {
   private String clusterGroup;
   private List<Application> applications;
@@ -24,6 +26,9 @@ public class ClusterGroupDashboard {
   }
 
   public List<Application> getApplications() {
+    if (applications == null) {
+      return emptyList();
+    }
     return applications;
   }
 
