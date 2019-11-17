@@ -7,3 +7,5 @@ global:
 #         selector is defaulted to 'app = application name' - in this case app = dynamite
 #         pod controller is  defaulted to deployment
 #         container is defaulted to the first listed container
+        - name: aggregator
+          prefix: andromeda
