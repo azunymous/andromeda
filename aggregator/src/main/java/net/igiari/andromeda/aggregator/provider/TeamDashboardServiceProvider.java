@@ -1,6 +1,7 @@
-package net.igiari.andromeda.aggregator.clients;
+package net.igiari.andromeda.aggregator.provider;
 
 import com.google.gson.Gson;
+import net.igiari.andromeda.aggregator.clients.CollectorClient;
 import net.igiari.andromeda.aggregator.config.AggregatorConfig;
 import net.igiari.andromeda.aggregator.config.ClusterConfig;
 import net.igiari.andromeda.aggregator.services.ClusterGroupDashboardService;
@@ -12,16 +13,17 @@ import java.net.http.HttpClient;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 @Component
-public class TeamDashboardServiceClient {
+public class TeamDashboardServiceProvider {
   private final TeamDashboardService teamDashboardService;
   private final HttpClient httpClient;
   private final Gson gson;
 
-  public TeamDashboardServiceClient(AggregatorConfig aggregatorConfig) {
+  public TeamDashboardServiceProvider(AggregatorConfig aggregatorConfig) {
     this.httpClient = HttpClient.newHttpClient();
     this.gson = new Gson();
     this.teamDashboardService = createFrom(aggregatorConfig);
@@ -45,7 +47,7 @@ public class TeamDashboardServiceClient {
             .collect(
                 toMap(
                     Map.Entry::getKey, e -> this.createClusterGroupDashBoardService(e.getValue())));
-    return new TeamDashboardService(clusterGroupDashboardServices);
+    return new TeamDashboardService(clusterGroupDashboardServices, emptyList());
   }
 
   private ClusterGroupDashboardService createClusterGroupDashBoardService(

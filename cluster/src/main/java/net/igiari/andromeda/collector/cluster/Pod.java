@@ -1,11 +1,13 @@
 package net.igiari.andromeda.collector.cluster;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Pod {
   private final String name;
   private final String version;
   private final Status status;
+  private List<Dependency> dependencies;
 
   public Pod(String name, String version, Status status) {
     this.name = name;
@@ -25,6 +27,14 @@ public class Pod {
     return status;
   }
 
+  public void setDependencies(List<Dependency> dependencies) {
+    this.dependencies = dependencies;
+  }
+
+  public List<Dependency> getDependencies() {
+    return dependencies;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -32,12 +42,13 @@ public class Pod {
     Pod pod = (Pod) o;
     return Objects.equals(name, pod.name) &&
         Objects.equals(version, pod.version) &&
-        status == pod.status;
+        status == pod.status &&
+        Objects.equals(dependencies, pod.dependencies);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, version, status);
+    return Objects.hash(name, version, status, dependencies);
   }
 
   @Override
@@ -46,6 +57,7 @@ public class Pod {
         "name='" + name + '\'' +
         ", version='" + version + '\'' +
         ", status=" + status +
+        ", dependencies=" + dependencies +
         '}';
   }
 

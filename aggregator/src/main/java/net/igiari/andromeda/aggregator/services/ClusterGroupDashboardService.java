@@ -21,7 +21,7 @@ import static java.util.stream.Collectors.toList;
 public class ClusterGroupDashboardService {
   private List<CollectorClient> collectorClients;
 
-  Logger logger = LoggerFactory.getLogger(ClusterGroupDashboardService.class);
+  private Logger logger = LoggerFactory.getLogger(ClusterGroupDashboardService.class);
 
   public ClusterGroupDashboardService(List<CollectorClient> collectorClients) {
     this.collectorClients = collectorClients;
@@ -46,8 +46,10 @@ public class ClusterGroupDashboardService {
         .map(clusterGroupDashboard -> clusterGroupDashboard.withClusterGroup(clusterGroup));
   }
 
-  private ClusterGroupDashboard logAndIgnore(Throwable throwable, String teamName, String clusterGroup) {
-    logger.warn("Failed to get team " + teamName + " for cluster group " + clusterGroup + ": " + throwable);
+  private ClusterGroupDashboard logAndIgnore(
+      Throwable throwable, String teamName, String clusterGroup) {
+    logger.warn(
+        "Failed to get team " + teamName + " for cluster group " + clusterGroup + ": " + throwable);
     return null;
   }
 

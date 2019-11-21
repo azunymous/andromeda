@@ -1,6 +1,6 @@
 package net.igiari.andromeda.aggregator.controllers;
 
-import net.igiari.andromeda.aggregator.clients.TeamDashboardServiceClient;
+import net.igiari.andromeda.aggregator.provider.TeamDashboardServiceProvider;
 import net.igiari.andromeda.aggregator.config.AggregatorConfig;
 import net.igiari.andromeda.aggregator.dashboard.TeamDashboard;
 import net.igiari.andromeda.aggregator.services.TeamDashboardService;
@@ -15,9 +15,9 @@ public class AndromedaController {
   private final TeamDashboardService teamDashboardService;
 
   public AndromedaController(
-      AggregatorConfig aggregatorConfig, TeamDashboardServiceClient teamDashboardServiceClient) {
+      AggregatorConfig aggregatorConfig, TeamDashboardServiceProvider teamDashboardServiceProvider) {
     this.aggregatorConfig = aggregatorConfig;
-    this.teamDashboardService = teamDashboardServiceClient.getTeamDashboardService();
+    this.teamDashboardService = teamDashboardServiceProvider.getTeamDashboardService();
   }
 
   @RequestMapping("/")

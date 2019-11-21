@@ -11,19 +11,31 @@ import static java.util.stream.Collectors.toList;
 
 public class TeamDashboardService {
   private final Map<String, ClusterGroupDashboardService> clusterGroupDashboardServices;
+  private final List<ClusterGroupTransformer> transformers;
 
   public TeamDashboardService(
-      Map<String, ClusterGroupDashboardService> clusterGroupDashboardServices) {
+      Map<String, ClusterGroupDashboardService> clusterGroupDashboardServices,
+      List<ClusterGroupTransformer> transformers) {
     this.clusterGroupDashboardServices = clusterGroupDashboardServices;
+    this.transformers = transformers;
   }
 
   public TeamDashboard createTeamDashboard(String team) {
-    List<ClusterGroupDashboard> clusterGroupDashboards = clusterGroupDashboardServices.entrySet().stream()
-        .map(
-            clusterGroupService ->
-                clusterGroupService.getValue().createTeam(team, clusterGroupService.getKey()))
-        .flatMap(Optional::stream)
-        .collect(toList());
+    List<ClusterGroupDashboard> clusterGroupDashboards =
+        clusterGroupDashboardServices.entrySet().stream()
+            .map(
+                clusterGroupService ->
+                    clusterGroupService.getValue().createTeam(team, clusterGroupService.getKey()))
+            .flatMap(Optional::stream)
+            .map(this::transform)
+            .collect(toList());
     return new TeamDashboard(team, clusterGroupDashboards);
+  }
+
+  private ClusterGroupDashboard transform(ClusterGroupDashboard dashboard) {
+    for (ClusterGroupTransformer transformer : transformers) {
+      dashboard = transformer.transform(dashboard);
+    }
+    return dashboard;
   }
 }
