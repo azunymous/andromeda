@@ -1,4 +1,4 @@
-package net.igiari.andromeda.aggregator.services;
+package net.igiari.andromeda.aggregator.transformers;
 
 import net.igiari.andromeda.aggregator.clients.PrometheusClient;
 import net.igiari.andromeda.aggregator.dashboard.ClusterGroupDashboard;

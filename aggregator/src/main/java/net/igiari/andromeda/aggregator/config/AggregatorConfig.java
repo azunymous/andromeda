@@ -9,6 +9,7 @@ import java.util.Map;
 @ConfigurationProperties("aggregator")
 public class AggregatorConfig {
   private Map<String, ClusterConfig> clusters;
+  private String prometheusURI;
 
   public AggregatorConfig() {}
 
@@ -18,5 +19,13 @@ public class AggregatorConfig {
 
   public void setClusters(Map<String, ClusterConfig> clusters) {
     this.clusters = clusters;
+  }
+
+  public String getPrometheusURI() {
+    return prometheusURI;
+  }
+
+  public void setPrometheusURI(String prometheusURI) {
+    this.prometheusURI = prometheusURI;
   }
 }

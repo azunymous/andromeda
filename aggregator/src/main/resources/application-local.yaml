@@ -1,4 +1,5 @@
 aggregator:
+  prometheusURI: http://localhost:9091/api/v1/
   clusters:
     cluster-one:
       type: kubernetes

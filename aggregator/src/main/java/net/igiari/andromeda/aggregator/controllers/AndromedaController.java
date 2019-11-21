@@ -1,6 +1,6 @@
 package net.igiari.andromeda.aggregator.controllers;
 
-import net.igiari.andromeda.aggregator.provider.TeamDashboardServiceProvider;
+import net.igiari.andromeda.aggregator.providers.TeamDashboardServiceProvider;
 import net.igiari.andromeda.aggregator.config.AggregatorConfig;
 import net.igiari.andromeda.aggregator.dashboard.TeamDashboard;
 import net.igiari.andromeda.aggregator.services.TeamDashboardService;
