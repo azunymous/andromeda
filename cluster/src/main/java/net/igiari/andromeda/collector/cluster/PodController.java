@@ -1,11 +1,13 @@
 package net.igiari.andromeda.collector.cluster;
 
+import net.igiari.andromeda.collector.cluster.comparers.Nameable;
+
 import java.util.List;
 import java.util.Objects;
 
 import static java.util.Collections.emptyList;
 
-public class PodController {
+public class PodController implements Nameable {
   public static final String UNKNOWN_VERSION = "UNKNOWN";
   private String name;
   private List<Pod> pods;

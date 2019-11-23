@@ -1,13 +1,16 @@
 package net.igiari.andromeda.collector.cluster;
 
+import net.igiari.andromeda.collector.cluster.comparers.Nameable;
+
 import java.util.List;
 import java.util.Objects;
 
-public class Pod {
+public class Pod implements Nameable {
   private final String name;
   private final String version;
   private final Status status;
   private List<Dependency> dependencies;
+  private List<FeatureFlag> featureFlags;
 
   public Pod(String name, String version, Status status) {
     this.name = name;
@@ -35,6 +38,14 @@ public class Pod {
     return dependencies;
   }
 
+  public List<FeatureFlag> getFeatureFlags() {
+    return featureFlags;
+  }
+
+  public void setFeatureFlags(List<FeatureFlag> featureFlags) {
+    this.featureFlags = featureFlags;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -43,12 +54,13 @@ public class Pod {
     return Objects.equals(name, pod.name) &&
         Objects.equals(version, pod.version) &&
         status == pod.status &&
-        Objects.equals(dependencies, pod.dependencies);
+        Objects.equals(dependencies, pod.dependencies) &&
+        Objects.equals(featureFlags, pod.featureFlags);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, version, status, dependencies);
+    return Objects.hash(name, version, status, dependencies, featureFlags);
   }
 
   @Override
@@ -58,10 +70,7 @@ public class Pod {
         ", version='" + version + '\'' +
         ", status=" + status +
         ", dependencies=" + dependencies +
+        ", featureFlags=" + featureFlags +
         '}';
-  }
-
-  public static int byName(Pod pod1, Pod pod2) {
-    return pod1.getName().compareTo(pod2.getName());
   }
 }

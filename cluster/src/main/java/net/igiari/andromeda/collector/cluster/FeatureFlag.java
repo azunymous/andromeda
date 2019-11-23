@@ -4,13 +4,13 @@ import net.igiari.andromeda.collector.cluster.comparers.Nameable;
 
 import java.util.Objects;
 
-public class Dependency implements Nameable {
+public class FeatureFlag implements Nameable {
   private String name;
-  private boolean up;
+  private double strategy;
 
-  public Dependency(String name, boolean up) {
+  public FeatureFlag(String name, double strategy) {
     this.name = name;
-    this.up = up;
+    this.strategy = strategy;
   }
 
   public String getName() {
@@ -21,29 +21,29 @@ public class Dependency implements Nameable {
     this.name = name;
   }
 
-  public boolean isUp() {
-    return up;
+  public double getStrategy() {
+    return strategy;
   }
 
-  public void setUp(boolean up) {
-    this.up = up;
+  public void setStrategy(double strategy) {
+    this.strategy = strategy;
   }
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    Dependency that = (Dependency) o;
-    return up == that.up && Objects.equals(name, that.name);
+    FeatureFlag that = (FeatureFlag) o;
+    return Objects.equals(name, that.name) && Objects.equals(strategy, that.strategy);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, up);
+    return Objects.hash(name, strategy);
   }
 
   @Override
   public String toString() {
-    return "Dependency{" + "name='" + name + '\'' + ", up=" + up + '}';
+    return "FeatureFlag{" + "name='" + name + '\'' + ", strategy='" + strategy + '\'' + '}';
   }
 }

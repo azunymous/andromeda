@@ -4,6 +4,7 @@ import net.igiari.andromeda.aggregator.clients.CollectorClient;
 import net.igiari.andromeda.aggregator.dashboard.ClusterGroupDashboard;
 import net.igiari.andromeda.collector.cluster.Application;
 import net.igiari.andromeda.collector.cluster.Environment;
+import net.igiari.andromeda.collector.cluster.comparers.Compare;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +66,7 @@ public class ClusterGroupDashboardService {
             .entrySet()
             .stream()
             .map(ClusterGroupDashboardService::toApplication)
-            .sorted(Application::byName)
+            .sorted(Compare::byName)
             .collect(toList());
     clusterGroupDashboard.setApplications(squashedApplications);
     return clusterGroupDashboard;

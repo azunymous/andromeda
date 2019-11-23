@@ -5,6 +5,7 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import net.igiari.andromeda.collector.cluster.Pod;
 import net.igiari.andromeda.collector.cluster.PodController;
 import net.igiari.andromeda.collector.cluster.Status;
+import net.igiari.andromeda.collector.cluster.comparers.Compare;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ public class PodsClient {
     return kubernetesClient.pods().inNamespace(namespaceName).withLabels(selector).list().getItems()
         .stream()
         .map((io.fabric8.kubernetes.api.model.Pod pod) -> createPodFrom(pod, containerName))
-        .sorted(Pod::byName)
+        .sorted(Compare::byName)
         .collect(Collectors.toUnmodifiableList());
   }
 

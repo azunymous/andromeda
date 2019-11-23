@@ -3,6 +3,8 @@ package net.igiari.andromeda.aggregator.clients;
 import com.google.gson.Gson;
 import net.igiari.andromeda.aggregator.clients.prometheus.PrometheusResponse;
 import net.igiari.andromeda.collector.cluster.Dependency;
+import net.igiari.andromeda.collector.cluster.FeatureFlag;
+import net.igiari.andromeda.collector.cluster.comparers.Compare;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -12,6 +14,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.function.Function;
 
 import static java.util.Collections.emptyList;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -21,6 +24,7 @@ public class PrometheusClient {
   private Logger logger = LoggerFactory.getLogger(PrometheusClient.class);
 
   private static final String DOWNSTREAM_DEPENDENCY_METRIC = "downstream_dependency";
+  private static final String FEATURE_FLAG_METRIC = "feature_flag";
   private final URI uri;
   private final HttpClient httpClient;
   private final Gson gson;
@@ -31,34 +35,42 @@ public class PrometheusClient {
     this.gson = gson;
   }
 
-  private URI createDependencyURI(String podName, String namespaceName) {
+  private URI createQueryURI(String metricName, String podName, String namespaceName) {
     return UriComponentsBuilder.fromUri(uri)
         .path("query")
         .queryParam(
             "query",
-            DOWNSTREAM_DEPENDENCY_METRIC
-                + "{instance=\""
-                + podName
-                + "\", namespace=\""
-                + namespaceName
-                + "\"}[1m]")
+            metricName + "{instance=\"" + podName + "\", namespace=\"" + namespaceName + "\"}[1m]")
         .build()
         .toUri();
   }
 
-  public List<Dependency> getDependencies(String podName, String namespaceName) {
+  private <T> List<T> getApplicationInfo(
+      Function<String, List<T>> createApplicationInfo,
+      String metricName,
+      String podName,
+      String namespaceName) {
     HttpRequest httpRequest =
-        HttpRequest.newBuilder().uri(createDependencyURI(podName, namespaceName)).build();
+        HttpRequest.newBuilder().uri(createQueryURI(metricName, podName, namespaceName)).build();
     return httpClient
         .sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
         .orTimeout(2, SECONDS)
         .thenApply(HttpResponse::body)
-        .thenApply(this::toDependency)
+        .thenApply(createApplicationInfo)
         .exceptionally(this::logAndIgnore)
         .join();
   }
 
-  private List<Dependency> logAndIgnore(Throwable throwable) {
+  public List<Dependency> getDependencies(String podName, String namespaceName) {
+    return getApplicationInfo(
+        this::toDependency, DOWNSTREAM_DEPENDENCY_METRIC, podName, namespaceName);
+  }
+
+  public List<FeatureFlag> getFeatureFlags(String podName, String namespaceName) {
+    return getApplicationInfo(this::toFeatureFlag, FEATURE_FLAG_METRIC, podName, namespaceName);
+  }
+
+  private <T> List<T> logAndIgnore(Throwable throwable) {
     logger.info("Error connecting to prometheus " + throwable);
     return emptyList();
   }
@@ -68,8 +80,31 @@ public class PrometheusClient {
     if (!prometheusResponse.isSuccessful()) {
       return emptyList();
     }
-
     return dependenciesFrom(prometheusResponse);
+  }
+
+  private List<FeatureFlag> toFeatureFlag(String s) {
+    final PrometheusResponse prometheusResponse = gson.fromJson(s, PrometheusResponse.class);
+    if (!prometheusResponse.isSuccessful()) {
+      return emptyList();
+    }
+
+    return featureFlagsFrom(prometheusResponse);
+  }
+
+  private List<FeatureFlag> featureFlagsFrom(PrometheusResponse prometheusResponse) {
+    return prometheusResponse.getData().getResult().stream()
+        .map(
+            result ->
+                new FeatureFlag(
+                    result.getMetric().getDependencyName(), getLastValue(result.getValues())))
+        .sorted(Compare::byName)
+
+        .collect(toList());
+  }
+
+  private double getLastValue(List<List<Double>> values) {
+    return values.get(values.size() - 1).get(1);
   }
 
   private List<Dependency> dependenciesFrom(PrometheusResponse prometheusResponse) {
@@ -77,11 +112,11 @@ public class PrometheusClient {
         .map(
             result ->
                 new Dependency(result.getMetric().getDependencyName(), isUp(result.getValues())))
-        .sorted(Dependency::byName)
+        .sorted(Compare::byName)
         .collect(toList());
   }
 
   private boolean isUp(List<List<Double>> values) {
-    return values.get(values.size() - 1).get(1) == 1;
+    return getLastValue(values) == 1;
   }
 }

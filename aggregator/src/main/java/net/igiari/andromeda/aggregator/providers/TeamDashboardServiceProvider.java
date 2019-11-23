@@ -8,6 +8,7 @@ import net.igiari.andromeda.aggregator.config.ClusterConfig;
 import net.igiari.andromeda.aggregator.services.ClusterGroupDashboardService;
 import net.igiari.andromeda.aggregator.services.TeamDashboardService;
 import net.igiari.andromeda.aggregator.transformers.ClusterGroupTransformer;
+import net.igiari.andromeda.aggregator.transformers.FeatureFlagTransformer;
 import net.igiari.andromeda.aggregator.transformers.PodDependencyTransformer;
 import org.springframework.stereotype.Component;
 
@@ -53,7 +54,8 @@ public class TeamDashboardServiceProvider {
                 toMap(
                     Map.Entry::getKey, e -> this.createClusterGroupDashBoardService(e.getValue())));
 
-    final List<ClusterGroupTransformer> transformers = List.of(podDependencyTransformer());
+    final List<ClusterGroupTransformer> transformers =
+        List.of(podDependencyTransformer(), featureFlagTransformer());
     return new TeamDashboardService(clusterGroupDashboardServices, transformers);
   }
 
@@ -71,5 +73,9 @@ public class TeamDashboardServiceProvider {
 
   private PodDependencyTransformer podDependencyTransformer() {
     return new PodDependencyTransformer(prometheusClient);
+  }
+
+  private ClusterGroupTransformer featureFlagTransformer() {
+    return new FeatureFlagTransformer(prometheusClient);
   }
 }

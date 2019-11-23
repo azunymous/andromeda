@@ -1,9 +1,11 @@
 package net.igiari.andromeda.collector.cluster;
 
+import net.igiari.andromeda.collector.cluster.comparers.Nameable;
+
 import java.util.List;
 import java.util.Objects;
 
-public class Application {
+public class Application implements Nameable {
   private String name;
   private List<Environment> environments;
 
@@ -33,8 +35,7 @@ public class Application {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Application that = (Application) o;
-    return Objects.equals(name, that.name) &&
-        Objects.equals(environments, that.environments);
+    return Objects.equals(name, that.name) && Objects.equals(environments, that.environments);
   }
 
   @Override
@@ -44,13 +45,6 @@ public class Application {
 
   @Override
   public String toString() {
-    return "Application{" +
-        "name='" + name + '\'' +
-        ", environments=" + environments +
-        '}';
-  }
-
-  public static int byName(Application application1, Application application2) {
-    return application1.getName().compareTo(application2.getName());
+    return "Application{" + "name='" + name + '\'' + ", environments=" + environments + '}';
   }
 }
