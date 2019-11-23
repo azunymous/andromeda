@@ -1,10 +1,11 @@
 package net.igiari.andromeda.collector.clients;
 
 import net.igiari.andromeda.collector.cluster.Application;
+import net.igiari.andromeda.collector.cluster.Environment;
 import net.igiari.andromeda.collector.cluster.Team;
+import net.igiari.andromeda.collector.config.ClusterConfig;
 import net.igiari.andromeda.collector.config.GlobalConfig;
 import net.igiari.andromeda.collector.config.TeamConfig;
-import net.igiari.andromeda.collector.config.ClusterConfig;
 
 import java.util.Collection;
 import java.util.List;
@@ -37,7 +38,18 @@ public class TeamsClient {
                     applicationsClient.getApplication(
                         application, clusterConfig.getNamespaceSuffixes()))
             .collect(toList());
-    return new Team(teamName, teamApplications);
+
+    List<String> clusterEnvironments = getClusterEnvironments(teamApplications);
+    return new Team(teamName, teamApplications, clusterEnvironments);
+  }
+
+  private List<String> getClusterEnvironments(List<Application> teamApplications) {
+    return teamApplications.stream()
+        .flatMap(app -> app.getEnvironments().stream())
+        .map(Environment::getEnvironmentName)
+        .distinct()
+        .sorted(applicationsClient::environmentPriority)
+        .collect(toList());
   }
 
   private Optional<TeamConfig> getTeamConfig(String teamName) {

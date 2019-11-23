@@ -24,7 +24,7 @@ class ClusterGroupDashboardServiceTest {
     List<CollectorClient> stubbedCollectorClients = List.of(new StubbedCollectorClient(CLUSTER1), new StubbedCollectorClient(CLUSTER2));
     ClusterGroupDashboardService clusterGroupDashboardService = new ClusterGroupDashboardService(stubbedCollectorClients);
 
-    Optional<ClusterGroupDashboard> teamData = clusterGroupDashboardService.createTeam("andromeda", "clusterGroup");
+    Optional<ClusterGroupDashboard> teamData = clusterGroupDashboardService.createClusterGroupDashboard("andromeda", "clusterGroup");
     assertThat(teamData).isNotEmpty();
     assertThat(teamData).contains(createTeamClusterWithBoth());
   }

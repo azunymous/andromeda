@@ -16,14 +16,14 @@ public class TeamUtilities {
     Environment environment = createEnvironment("collector-d9b96ffdb-jw26m", Status.READY, "-dev", "andromeda-dev");
     Application collector = new Application("collector", List.of(environment));
     List<Application> applicationList = List.of(collector);
-    return new Team("andromeda", applicationList);
+    return new Team("andromeda", applicationList, List.of("-dev"));
   }
 
   public static Team createTeamInAnotherCluster() {
     Environment environment = createEnvironment("collector-diff-pod", Status.LIVE, "-test", "andromeda-test");
     Application collector = new Application("collector", List.of(environment));
     List<Application> applicationList = List.of(collector);
-    return new Team("andromeda", applicationList);
+    return new Team("andromeda", applicationList, List.of("-test"));
   }
 
   private static Environment createEnvironment(String podName, Status ready, String environmentName, String namespaceName) {
@@ -41,6 +41,6 @@ public class TeamUtilities {
 
     Application collector = new Application("collector", List.of(devEnv, testEnv));
     List<Application> applicationList = List.of(collector);
-    return new ClusterGroupDashboard("clusterGroup", applicationList);
+    return new ClusterGroupDashboard("clusterGroup", applicationList, List.of("-dev", "-test"));
   }
 }

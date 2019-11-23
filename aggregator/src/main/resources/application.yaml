@@ -1,8 +1,10 @@
-
 spring:
   profiles:
     include:
       - local
+  http:
+    converters:
+      preferred-json-mapper: gson
 server:
   port: 9090
 management:

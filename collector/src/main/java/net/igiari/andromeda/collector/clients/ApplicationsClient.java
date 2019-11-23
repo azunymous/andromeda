@@ -47,27 +47,29 @@ public class ApplicationsClient {
     return applicationConfig.getPrefix() + namespaceSuffix;
   }
 
+  int environmentPriority(String env1, String env2) {
+    if (priorityConfig.getFirst().contains(env1)) {
+      if (priorityConfig.getFirst().contains(env2)) {
+        return priorityConfig.getFirst().indexOf(env1) - priorityConfig.getFirst().indexOf(env2);
+      }
+      return -1;
+    }
+    if (priorityConfig.getFirst().contains(env2)) {
+      return 1;
+    }
+    if (priorityConfig.getLast().contains(env1)) {
+      if (priorityConfig.getLast().contains(env2)) {
+        return priorityConfig.getLast().indexOf(env1) - priorityConfig.getLast().indexOf(env2);
+      }
+      return 1;
+    }
+    if (priorityConfig.getLast().contains(env2)) {
+      return -1;
+    }
+    return env1.compareTo(env2);
+  }
+
   int environmentPriority(Environment env1, Environment env2) {
-    if (priorityConfig.getFirst().contains(env1.getEnvironmentName())) {
-      if (priorityConfig.getFirst().contains(env2.getEnvironmentName())) {
-        return priorityConfig.getFirst().indexOf(env1.getEnvironmentName())
-            - priorityConfig.getFirst().indexOf(env2.getEnvironmentName());
-      }
-      return -1;
-    }
-    if (priorityConfig.getFirst().contains(env2.getEnvironmentName())) {
-      return 1;
-    }
-    if (priorityConfig.getLast().contains(env1.getEnvironmentName())) {
-      if (priorityConfig.getLast().contains(env2.getEnvironmentName())) {
-        return priorityConfig.getLast().indexOf(env1.getEnvironmentName())
-            - priorityConfig.getLast().indexOf(env2.getEnvironmentName());
-      }
-      return 1;
-    }
-    if (priorityConfig.getLast().contains(env2.getEnvironmentName())) {
-      return -1;
-    }
-    return env1.getNamespaceName().compareTo(env2.getNamespaceName());
+    return environmentPriority(env1.getEnvironmentName(), env2.getEnvironmentName());
   }
 }

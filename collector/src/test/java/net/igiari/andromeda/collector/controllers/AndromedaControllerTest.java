@@ -3,6 +3,7 @@ package net.igiari.andromeda.collector.controllers;
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
 import io.fabric8.kubernetes.api.model.ContainerStatusBuilder;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
+import net.igiari.andromeda.collector.clients.Client;
 import net.igiari.andromeda.collector.cluster.Application;
 import net.igiari.andromeda.collector.cluster.Environment;
 import net.igiari.andromeda.collector.cluster.Pod;
@@ -10,12 +11,11 @@ import net.igiari.andromeda.collector.cluster.PodController;
 import net.igiari.andromeda.collector.cluster.PodControllerType;
 import net.igiari.andromeda.collector.cluster.Status;
 import net.igiari.andromeda.collector.cluster.Team;
+import net.igiari.andromeda.collector.config.ApplicationConfig;
 import net.igiari.andromeda.collector.config.ClusterConfig;
 import net.igiari.andromeda.collector.config.GlobalConfig;
 import net.igiari.andromeda.collector.config.PriorityConfig;
 import net.igiari.andromeda.collector.config.TeamConfig;
-import net.igiari.andromeda.collector.clients.Client;
-import net.igiari.andromeda.collector.config.ApplicationConfig;
 import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.jupiter.api.AfterEach;
@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Assertions.assertThat;
 
 class AndromedaControllerTest {
   @Rule public KubernetesServer server = new KubernetesServer(true, true);
@@ -97,7 +97,7 @@ class AndromedaControllerTest {
             new PodController("deployment-2", podsWithVersion(2 ), PodControllerType.DEPLOYMENT));
     Application application = new Application(appName, List.of(dev, test, prod));
 
-    return new Team(teamName, List.of(application));
+    return new Team(teamName, List.of(application), emptyList());
   }
 
   private List<Pod> podsWithVersion(int version) {

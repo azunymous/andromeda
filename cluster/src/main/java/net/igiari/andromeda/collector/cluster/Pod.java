@@ -51,11 +51,11 @@ public class Pod implements Nameable {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Pod pod = (Pod) o;
-    return Objects.equals(name, pod.name) &&
-        Objects.equals(version, pod.version) &&
-        status == pod.status &&
-        Objects.equals(dependencies, pod.dependencies) &&
-        Objects.equals(featureFlags, pod.featureFlags);
+    return Objects.equals(name, pod.name)
+        && Objects.equals(version, pod.version)
+        && status == pod.status
+        && Objects.equals(dependencies, pod.dependencies)
+        && Objects.equals(featureFlags, pod.featureFlags);
   }
 
   @Override
@@ -65,12 +65,19 @@ public class Pod implements Nameable {
 
   @Override
   public String toString() {
-    return "Pod{" +
-        "name='" + name + '\'' +
-        ", version='" + version + '\'' +
-        ", status=" + status +
-        ", dependencies=" + dependencies +
-        ", featureFlags=" + featureFlags +
-        '}';
+    return "Pod{"
+        + "name='"
+        + name
+        + '\''
+        + ", version='"
+        + version
+        + '\''
+        + ", status="
+        + status
+        + ", dependencies="
+        + dependencies
+        + ", featureFlags="
+        + featureFlags
+        + '}';
   }
 }

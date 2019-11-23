@@ -26,7 +26,9 @@ public class TeamDashboardService {
         clusterGroupDashboardServices.entrySet().stream()
             .map(
                 clusterGroupService ->
-                    clusterGroupService.getValue().createTeam(team, clusterGroupService.getKey()))
+                    clusterGroupService
+                        .getValue()
+                        .createClusterGroupDashboard(team, clusterGroupService.getKey()))
             .flatMap(Optional::stream)
             .map(this::transform)
             .collect(toList());

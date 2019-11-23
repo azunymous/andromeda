@@ -28,13 +28,7 @@ public class ClusterGroupDashboardService {
     this.collectorClients = collectorClients;
   }
 
-  private static ClusterGroupDashboard combine(ClusterGroupDashboard t1, ClusterGroupDashboard t2) {
-    List<Application> applications = new ArrayList<>();
-    Stream.of(t1.getApplications(), t2.getApplications()).forEach(applications::addAll);
-    return new ClusterGroupDashboard(applications);
-  }
-
-  public Optional<ClusterGroupDashboard> createTeam(String teamName, String clusterGroup) {
+  public Optional<ClusterGroupDashboard> createClusterGroupDashboard(String teamName, String clusterGroup) {
     return collectorClients.stream()
         .map(collectorClient -> collectorClient.collect(teamName))
         .map(cf -> cf.orTimeout(2, SECONDS))
@@ -45,6 +39,14 @@ public class ClusterGroupDashboardService {
         .map(CompletableFuture::join)
         .map(ClusterGroupDashboardService::squashApplications)
         .map(clusterGroupDashboard -> clusterGroupDashboard.withClusterGroup(clusterGroup));
+  }
+
+  private static ClusterGroupDashboard combine(ClusterGroupDashboard t1, ClusterGroupDashboard t2) {
+    List<Application> applications = new ArrayList<>();
+    List<String> clusterGroupEnvironments = new ArrayList<>();
+    Stream.of(t1.getApplications(), t2.getApplications()).forEach(applications::addAll);
+    Stream.of(t1.getClusterGroupEnvironments(), t2.getClusterGroupEnvironments()).forEach(clusterGroupEnvironments::addAll);
+    return new ClusterGroupDashboard(applications, clusterGroupEnvironments);
   }
 
   private ClusterGroupDashboard logAndIgnore(

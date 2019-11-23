@@ -16,7 +16,7 @@ class CollectorClientTest {
   @Test
   void collect() {
     String jsonFromCollector =
-        "{\"teamName\":\"andromeda\",\"applications\":[{\"name\":\"collector\",\"environments\":[{\"environmentName\":\"-dev\",\"namespaceName\":\"andromeda-dev\",\"podController\":{\"name\":\"collector\",\"pods\":[{\"name\":\"collector-d9b96ffdb-jw26m\",\"version\":\"bb930eea\",\"status\":\"READY\"}],\"type\":\"DEPLOYMENT\",\"version\":\"bb930eea\",\"status\":\"READY\"}}]}]}";
+        "{\"teamName\":\"andromeda\",\"applications\":[{\"name\":\"collector\",\"environments\":[{\"environmentName\":\"-dev\",\"namespaceName\":\"andromeda-dev\",\"podController\":{\"name\":\"collector\",\"pods\":[{\"name\":\"collector-d9b96ffdb-jw26m\",\"version\":\"bb930eea\",\"status\":\"READY\"}],\"type\":\"DEPLOYMENT\",\"version\":\"bb930eea\",\"status\":\"READY\"}}]}], \"clusterEnvironments\":[\"-dev\"]}";
     HttpClientMock httpClientMock = new HttpClientMock();
     httpClientMock.onGet("http://collector.local/team/andromeda").doReturnJSON(jsonFromCollector);
     CollectorClient collectorClient =
