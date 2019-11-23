@@ -1,15 +1,21 @@
 package net.igiari.andromeda.collector.clients;
 
 import io.fabric8.kubernetes.api.model.Container;
+import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.api.model.KubernetesResourceList;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.dsl.AppsAPIGroupDSL;
+import io.fabric8.kubernetes.client.dsl.MixedOperation;
+import io.fabric8.kubernetes.client.dsl.RollableScalableResource;
 import net.igiari.andromeda.collector.cluster.PodController;
 import net.igiari.andromeda.collector.cluster.Status;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,7 +30,66 @@ public class PodControllersClient {
   public PodControllersClient(KubernetesClient kubernetesClient) {
     this.kubernetesClient = kubernetesClient;
   }
-  // TODO Refactor to combine shared logic with a passed in function
+
+  public Optional<PodController> getDeployment(
+      String namespaceName, Map<String, String> selector, String containerName) {
+    return getFabric8PodController(AppsAPIGroupDSL::deployments, namespaceName, selector)
+        .map(deployment -> createPodControllerFrom(deployment, containerName));
+  }
+
+  public Optional<PodController> getStatefulSet(
+      String namespaceName, Map<String, String> selector, String containerName) {
+    return getFabric8PodController(AppsAPIGroupDSL::statefulSets, namespaceName, selector)
+        .map((statefulSet -> createPodControllerFrom(statefulSet, containerName)))
+        .map(PodController::withTypeToStatefulSet);
+  }
+
+  private <T extends HasMetadata, TList extends KubernetesResourceList<T>, DoneableT>
+      Optional<T> getFabric8PodController(
+          Function<
+                  AppsAPIGroupDSL,
+                  MixedOperation<T, TList, DoneableT, RollableScalableResource<T, DoneableT>>>
+              podController,
+          String namespaceName,
+          Map<String, String> selector) {
+    return podController.apply(kubernetesClient.apps()).inNamespace(namespaceName)
+        .withLabels(selector).list().getItems().stream()
+        .findFirst();
+  }
+
+  private PodController createPodControllerFrom(Deployment controller, String containerName) {
+    PodController podController =
+        new PodController(controller.getMetadata().getName(), emptyList(), DEPLOYMENT);
+    Integer specReplicas = controller.getSpec().getReplicas();
+    Integer unavailableReplicas = controller.getStatus().getUnavailableReplicas();
+    Integer availableReplicas = controller.getStatus().getAvailableReplicas();
+    Integer readyReplicas = controller.getStatus().getReadyReplicas();
+
+    podController.setStatus(
+        determineStatusFrom(specReplicas, unavailableReplicas, availableReplicas, readyReplicas));
+    podController.setVersion(
+        determineVersionFrom(
+            controller.getSpec().getTemplate().getSpec().getContainers(), containerName)
+            .orElse(PodController.UNKNOWN_VERSION));
+    return podController;
+  }
+
+  private PodController createPodControllerFrom(StatefulSet controller, String containerName) {
+    PodController podController =
+        new PodController(controller.getMetadata().getName(), emptyList(), DEPLOYMENT);
+    int specReplicas = controller.getSpec().getReplicas();
+    int unavailableReplicas = specReplicas - controller.getStatus().getCurrentReplicas();
+    int availableReplicas = controller.getStatus().getCurrentReplicas();
+    int readyReplicas = controller.getStatus().getReadyReplicas();
+
+    podController.setStatus(
+        determineStatusFrom(specReplicas, unavailableReplicas, availableReplicas, readyReplicas));
+    podController.setVersion(
+        determineVersionFrom(
+            controller.getSpec().getTemplate().getSpec().getContainers(), containerName)
+            .orElse(PodController.UNKNOWN_VERSION));
+    return podController;
+  }
 
   static Optional<String> determineVersionFrom(List<Container> containers, String containerName) {
     if (containers.size() == 1 || containerName == null) {
@@ -48,57 +113,6 @@ public class PodControllersClient {
       return Optional.of(matcher.group(1));
     }
     return Optional.empty();
-  }
-
-  public Optional<PodController> getDeployment(
-      String namespaceName, Map<String, String> selector, String containerName) {
-    return kubernetesClient.apps().deployments().inNamespace(namespaceName).withLabels(selector)
-        .list().getItems().stream()
-        .findFirst()
-        .map(deployment -> createPodControllerFrom(deployment, containerName));
-  }
-
-  public Optional<PodController> getStatefulSet(
-      String namespaceName, Map<String, String> selector, String containerName) {
-    return kubernetesClient.apps().statefulSets().inNamespace(namespaceName).withLabels(selector)
-        .list().getItems().stream()
-        .findFirst()
-        .map((statefulSet -> createPodControllerFrom(statefulSet, containerName)))
-        .map(PodController::setTypeToStatefulSet);
-  }
-
-  private PodController createPodControllerFrom(Deployment controller, String containerName) {
-    PodController podController =
-        new PodController(controller.getMetadata().getName(), emptyList(), DEPLOYMENT);
-    Integer specReplicas = controller.getSpec().getReplicas();
-    Integer unavailableReplicas = controller.getStatus().getUnavailableReplicas();
-    Integer availableReplicas = controller.getStatus().getAvailableReplicas();
-    Integer readyReplicas = controller.getStatus().getReadyReplicas();
-
-    podController.setStatus(
-        determineStatusFrom(specReplicas, unavailableReplicas, availableReplicas, readyReplicas));
-    podController.setVersion(
-        determineVersionFrom(
-                controller.getSpec().getTemplate().getSpec().getContainers(), containerName)
-            .orElse(PodController.UNKNOWN_VERSION));
-    return podController;
-  }
-
-  private PodController createPodControllerFrom(StatefulSet controller, String containerName) {
-    PodController podController =
-        new PodController(controller.getMetadata().getName(), emptyList(), DEPLOYMENT);
-    int specReplicas = controller.getSpec().getReplicas();
-    int unavailableReplicas = specReplicas - controller.getStatus().getCurrentReplicas();
-    int availableReplicas = controller.getStatus().getCurrentReplicas();
-    int readyReplicas = controller.getStatus().getReadyReplicas();
-
-    podController.setStatus(
-        determineStatusFrom(specReplicas, unavailableReplicas, availableReplicas, readyReplicas));
-    podController.setVersion(
-        determineVersionFrom(
-                controller.getSpec().getTemplate().getSpec().getContainers(), containerName)
-            .orElse(PodController.UNKNOWN_VERSION));
-    return podController;
   }
 
   private Status determineStatusFrom(

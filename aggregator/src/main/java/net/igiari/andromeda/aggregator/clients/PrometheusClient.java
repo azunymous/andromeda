@@ -2,9 +2,11 @@ package net.igiari.andromeda.aggregator.clients;
 
 import com.google.gson.Gson;
 import net.igiari.andromeda.aggregator.clients.prometheus.PrometheusResponse;
+import net.igiari.andromeda.aggregator.clients.prometheus.ResultItem;
 import net.igiari.andromeda.collector.cluster.Dependency;
 import net.igiari.andromeda.collector.cluster.FeatureFlag;
 import net.igiari.andromeda.collector.cluster.comparers.Compare;
+import net.igiari.andromeda.collector.cluster.comparers.Nameable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -92,15 +94,20 @@ public class PrometheusClient {
     return featureFlagsFrom(prometheusResponse);
   }
 
-  private List<FeatureFlag> featureFlagsFrom(PrometheusResponse prometheusResponse) {
+  private <T extends Nameable> List<T> applicationInfoFrom(
+      PrometheusResponse prometheusResponse, Function<ResultItem, T> createAppInfo) {
     return prometheusResponse.getData().getResult().stream()
-        .map(
-            result ->
-                new FeatureFlag(
-                    result.getMetric().getDependencyName(), getLastValue(result.getValues())))
+        .map(createAppInfo)
         .sorted(Compare::byName)
-
         .collect(toList());
+  }
+
+  private List<FeatureFlag> featureFlagsFrom(PrometheusResponse prometheusResponse) {
+    return applicationInfoFrom(
+        prometheusResponse,
+        result ->
+            new FeatureFlag(
+                result.getMetric().getDependencyName(), getLastValue(result.getValues())));
   }
 
   private double getLastValue(List<List<Double>> values) {
@@ -108,12 +115,9 @@ public class PrometheusClient {
   }
 
   private List<Dependency> dependenciesFrom(PrometheusResponse prometheusResponse) {
-    return prometheusResponse.getData().getResult().stream()
-        .map(
-            result ->
-                new Dependency(result.getMetric().getDependencyName(), isUp(result.getValues())))
-        .sorted(Compare::byName)
-        .collect(toList());
+    return applicationInfoFrom(
+        prometheusResponse,
+        result -> new Dependency(result.getMetric().getDependencyName(), isUp(result.getValues())));
   }
 
   private boolean isUp(List<List<Double>> values) {

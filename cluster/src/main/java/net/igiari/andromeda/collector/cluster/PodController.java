@@ -83,7 +83,7 @@ public class PodController implements Nameable {
     return "PodController{" + "name='" + name + '\'' + ", pods=" + pods + ", type=" + type + '}';
   }
 
-  public PodController setTypeToStatefulSet() {
+  public PodController withTypeToStatefulSet() {
     this.setType(PodControllerType.STATEFULSET);
     return this;
   }
