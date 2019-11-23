@@ -41,6 +41,6 @@ public class TeamUtilities {
 
     Application collector = new Application("collector", List.of(devEnv, testEnv));
     List<Application> applicationList = List.of(collector);
-    return new ClusterGroupDashboard("clusterGroup", applicationList, List.of("-dev", "-test"));
+    return new ClusterGroupDashboard( applicationList, List.of("-dev", "-test"));
   }
 }

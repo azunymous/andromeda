@@ -7,8 +7,7 @@ import net.igiari.andromeda.aggregator.transformers.ClusterGroupTransformer;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import static java.util.stream.Collectors.toList;
+import java.util.stream.Collectors;
 
 public class TeamDashboardService {
   private final Map<String, ClusterGroupDashboardService> clusterGroupDashboardServices;
@@ -22,17 +21,19 @@ public class TeamDashboardService {
   }
 
   public TeamDashboard createTeamDashboard(String team) {
-    List<ClusterGroupDashboard> clusterGroupDashboards =
-        clusterGroupDashboardServices.entrySet().stream()
-            .map(
-                clusterGroupService ->
-                    clusterGroupService
-                        .getValue()
-                        .createClusterGroupDashboard(team, clusterGroupService.getKey()))
-            .flatMap(Optional::stream)
-            .map(this::transform)
-            .collect(toList());
+    final Map<String, ClusterGroupDashboard> clusterGroupDashboards = clusterGroupDashboardServices.entrySet().stream()
+        .collect(
+            Collectors.toMap(
+                Map.Entry::getKey,
+                es ->
+                    getTransformedClusterGroupDashboard(team, es.getValue())
+                        .orElse(ClusterGroupDashboard.empty())));
     return new TeamDashboard(team, clusterGroupDashboards);
+  }
+
+  private Optional<ClusterGroupDashboard> getTransformedClusterGroupDashboard(
+      String team, ClusterGroupDashboardService clusterGroupDashboardService) {
+    return clusterGroupDashboardService.createClusterGroupDashboard(team).map(this::transform);
   }
 
   private ClusterGroupDashboard transform(ClusterGroupDashboard dashboard) {

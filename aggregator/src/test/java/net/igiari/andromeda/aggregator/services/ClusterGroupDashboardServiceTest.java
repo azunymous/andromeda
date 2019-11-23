@@ -21,10 +21,13 @@ class ClusterGroupDashboardServiceTest {
 
   @Test
   void createTeam() {
-    List<CollectorClient> stubbedCollectorClients = List.of(new StubbedCollectorClient(CLUSTER1), new StubbedCollectorClient(CLUSTER2));
-    ClusterGroupDashboardService clusterGroupDashboardService = new ClusterGroupDashboardService(stubbedCollectorClients);
+    List<CollectorClient> stubbedCollectorClients =
+        List.of(new StubbedCollectorClient(CLUSTER1), new StubbedCollectorClient(CLUSTER2));
+    ClusterGroupDashboardService clusterGroupDashboardService =
+        new ClusterGroupDashboardService("clusterGroup", stubbedCollectorClients);
 
-    Optional<ClusterGroupDashboard> teamData = clusterGroupDashboardService.createClusterGroupDashboard("andromeda", "clusterGroup");
+    Optional<ClusterGroupDashboard> teamData =
+        clusterGroupDashboardService.createClusterGroupDashboard("andromeda");
     assertThat(teamData).isNotEmpty();
     assertThat(teamData).contains(createTeamClusterWithBoth());
   }

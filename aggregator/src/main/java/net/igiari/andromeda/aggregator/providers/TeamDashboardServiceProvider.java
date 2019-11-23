@@ -52,7 +52,7 @@ public class TeamDashboardServiceProvider {
         aggregatorConfig.getClusters().entrySet().stream()
             .collect(
                 toMap(
-                    Map.Entry::getKey, e -> this.createClusterGroupDashBoardService(e.getValue())));
+                    Map.Entry::getKey, e -> this.createClusterGroupDashBoardService(e.getKey(), e.getValue())));
 
     final List<ClusterGroupTransformer> transformers =
         List.of(podDependencyTransformer(), featureFlagTransformer());
@@ -60,8 +60,8 @@ public class TeamDashboardServiceProvider {
   }
 
   private ClusterGroupDashboardService createClusterGroupDashBoardService(
-      ClusterConfig clusterConfig) {
-    return new ClusterGroupDashboardService(createCollectorClients(clusterConfig));
+      String clusterGroup, ClusterConfig clusterConfig) {
+    return new ClusterGroupDashboardService(clusterGroup, createCollectorClients(clusterConfig));
   }
 
   private List<CollectorClient> createCollectorClients(ClusterConfig clusterConfig) {

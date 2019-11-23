@@ -20,25 +20,26 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
 
 public class ClusterGroupDashboardService {
+  private String clusterGroup;
   private List<CollectorClient> collectorClients;
 
   private Logger logger = LoggerFactory.getLogger(ClusterGroupDashboardService.class);
 
-  public ClusterGroupDashboardService(List<CollectorClient> collectorClients) {
+  public ClusterGroupDashboardService(String clusterGroup, List<CollectorClient> collectorClients) {
+    this.clusterGroup = clusterGroup;
     this.collectorClients = collectorClients;
   }
 
-  public Optional<ClusterGroupDashboard> createClusterGroupDashboard(String teamName, String clusterGroup) {
+  public Optional<ClusterGroupDashboard> createClusterGroupDashboard(String teamName ) {
     return collectorClients.stream()
         .map(collectorClient -> collectorClient.collect(teamName))
         .map(cf -> cf.orTimeout(2, SECONDS))
         .filter(cf -> !cf.isCompletedExceptionally())
         .map(cf -> cf.thenApply(ClusterGroupDashboard::create))
         .reduce((cf1, cf2) -> cf1.thenCombine(cf2, ClusterGroupDashboardService::combine))
-        .map(cf -> cf.exceptionally(throwable -> logAndIgnore(throwable, teamName, clusterGroup)))
+        .map(cf -> cf.exceptionally(throwable -> logAndIgnore(throwable, teamName)))
         .map(CompletableFuture::join)
-        .map(ClusterGroupDashboardService::squashApplications)
-        .map(clusterGroupDashboard -> clusterGroupDashboard.withClusterGroup(clusterGroup));
+        .map(ClusterGroupDashboardService::squashApplications);
   }
 
   private static ClusterGroupDashboard combine(ClusterGroupDashboard t1, ClusterGroupDashboard t2) {
@@ -50,7 +51,7 @@ public class ClusterGroupDashboardService {
   }
 
   private ClusterGroupDashboard logAndIgnore(
-      Throwable throwable, String teamName, String clusterGroup) {
+      Throwable throwable, String teamName) {
     logger.warn(
         "Failed to get team " + teamName + " for cluster group " + clusterGroup + ": " + throwable);
     return null;
