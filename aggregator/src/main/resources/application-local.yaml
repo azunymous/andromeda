@@ -5,3 +5,5 @@ aggregator:
       type: kubernetes
       collectors:
        - http://localhost:8080/team/
+  teams:
+    - andromeda

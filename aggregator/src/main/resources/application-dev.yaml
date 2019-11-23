@@ -4,3 +4,5 @@ aggregator:
       type: kubernetes
       collectors:
        - http://collector:8080/team/
+  teams:
+    - andromeda
