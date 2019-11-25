@@ -1,13 +1,12 @@
 import React from 'react';
-import {useRoutes} from 'hookrouter';
+import {useRoutes, useRedirect} from 'hookrouter';
 import './App.css';
 import OuterTable from "./dashboards/OuterTable";
 
 function App() {
     const routes = {
         '/': () => <HomePage/>,
-        '/:team': ({team}) => <Dashboard team={team}/>,
-        '/:team/:dataCentre': ({team, dataCentre}) => <Dashboard team={team} dataCentre={dataCentre}/>,
+        '/:team*': ({team}) => <Dashboard team={team}/>,
     };
 
     const routeResult = useRoutes(routes);
@@ -17,18 +16,18 @@ function App() {
 function HomePage() {
     return (
         <ul>
-            <li><a href={"/andromeda"}>andromeda</a></li>
-            <li><a href={"/acme"}>acme</a></li>
+            <li><a href={"/andromeda/"}>andromeda</a></li>
+            <li><a href={"/acme/"}>acme</a></li>
         </ul>
     )
 }
 
 
-function Dashboard({team, dataCentre}) {
+function Dashboard({team}) {
     return (
         <div>
             <h3>Team: {team}</h3>
-            <OuterTable team={team} dataCentre={dataCentre}/>
+            <OuterTable team={team}/>
         </div>
     );
 }

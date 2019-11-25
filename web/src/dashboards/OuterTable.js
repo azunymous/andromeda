@@ -1,14 +1,21 @@
 import React, {useEffect, useState} from 'react';
-import Table from "./Table";
+import {A, useRoutes, useRedirect} from 'hookrouter';
+import TeamDashboard from "./TeamDashboard";
 import Config from "../Configuration";
 
 function OuterTable(props) {
     let [isLoading, setIsLoading] = useState(true);
-    let [team, setTeam] = useState(props["team"]);
-    let [selectedDataCentre, setSelectedDataCentre] = useState("Kubernetes");
+    let [team] = useState(props["team"]);
     let [dataCentres, setDataCentres] = useState([]);
 
-    useEffect(fetchDataCentres, []);
+    const routes = {
+        '/': () => <TeamDashboard team={team} dataCentre="kubernetes"/>,
+        '/:dataCentre': ({dataCentre}) => <TeamDashboard team={team} dataCentre={dataCentre} mode={"CONTROLLER"}/>,
+        '/:dataCentre/pods': ({dataCentre}) => <TeamDashboard team={team} dataCentre={dataCentre} mode={"POD"}/>,
+    };
+    const routeResult = useRoutes(routes);
+
+    useEffect(fetchDataCentres, [props]);
 
     function getClusters(data) {
         let keys = [];
@@ -18,9 +25,6 @@ function OuterTable(props) {
     }
 
     function fetchDataCentres() {
-        if (props["dataCentre"] != null) {
-            setSelectedDataCentre(props["dataCentre"]);
-        }
         if (dataCentres.length === 0) {
             console.log("Getting dataCentres")
             fetch(Config.getAPIURL() + '/config/')
@@ -62,15 +66,15 @@ function OuterTable(props) {
                 <ul>
                     {dataCentres.map((dataCentre, index) => {
                         return (
-                            <li key={index}><a href={`/${team}/${dataCentre}`}>{dataCentre}</a></li>
+                            <li key={index}><A href={`/${team}/${dataCentre}`}>{dataCentre}</A>
+                            </li>
                         );
                     })}
                 </ul>
-                <Table dataCentre={selectedDataCentre} team={team}/>
+                {routeResult || "Error"}
             </div>
         )
     }
 }
-
 
 export default OuterTable
