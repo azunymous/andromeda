@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static java.util.Collections.singletonList;
+import static net.igiari.andromeda.collector.config.CanaryConfiguration.defaultCanaryConfiguration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ApplicationsClientTest {
@@ -86,7 +87,7 @@ class ApplicationsClientTest {
 
   private class StubbedEnvironmentsClient extends EnvironmentsClient {
     StubbedEnvironmentsClient() {
-      super(null, null, null);
+      super(null, null, null, defaultCanaryConfiguration());
     }
 
     @Override

@@ -1,11 +1,12 @@
 global:
+  canary:
+    enabled: true
+    selector:
+      type: canary
   teams:
     - name: andromeda
       applications:
         - name: collector
           prefix: andromeda
-#         selector is defaulted to 'app = application name' - in this case app = dynamite
-#         pod controller is  defaulted to deployment
-#         container is defaulted to the first listed container
         - name: aggregator
           prefix: andromeda

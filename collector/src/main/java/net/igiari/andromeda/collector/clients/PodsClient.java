@@ -20,9 +20,12 @@ public class PodsClient {
   }
 
   public List<Pod> getPods(
-      String namespaceName, Map<String, String> selector, String containerName) {
-    return kubernetesClient.pods().inNamespace(namespaceName).withLabels(selector).list().getItems()
-        .stream()
+      String namespaceName,
+      Map<String, String> selector,
+      Map<String, String> withoutSelector,
+      String containerName) {
+    return kubernetesClient.pods().inNamespace(namespaceName).withLabels(selector)
+        .withoutLabels(withoutSelector).list().getItems().stream()
         .map((io.fabric8.kubernetes.api.model.Pod pod) -> createPodFrom(pod, containerName))
         .sorted(Compare::byName)
         .collect(Collectors.toUnmodifiableList());

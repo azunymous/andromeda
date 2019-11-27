@@ -1,22 +1,32 @@
 global:
+  canary:
+    enabled: true
+#   Labels used to determine if a pod is marked as a canary
+#   These labels are also explicitly not selected for normal deployments if canaries are enabled.
+    selector:
+      variant: canary
+
   teams:
-    - name: galaxy
+    - name: teamName
       applications:
-        - name: alice
-          prefix: alice
-        - name: solar
-          prefix: solar
+        - name: web-frontend
+          prefix: webApp
           selector:
-            app: solar
-          deployment: solar
-        - name: milkyway
-          prefix: milkyway
+            type: frontend
+        - name: backend-application
+          prefix: webApp
+          selector:
+            type: backend
+          deployment: backend-app-container
+        - name: redis-for-backend
+          prefix: redis
           selector:
             app: app
+          statefulSet: redis
     - name: andromeda
       applications:
         - name: collector
           prefix: andromeda
-#         selector is defaulted to 'app = application name' - in this case app = dynamite
-#         pod controller is  defaulted to deployment
-#         container is defaulted to the first listed container
+#         selector is defaulted to 'app = application name' - in this case app=collector
+#         The type of controller can be specified and must be set to the container name
+#         An unset controller:container config is defaulted to a deployment and to the first container

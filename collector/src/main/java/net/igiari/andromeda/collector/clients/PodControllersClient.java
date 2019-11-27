@@ -32,14 +32,22 @@ public class PodControllersClient {
   }
 
   public Optional<PodController> getDeployment(
-      String namespaceName, Map<String, String> selector, String containerName) {
-    return getFabric8PodController(AppsAPIGroupDSL::deployments, namespaceName, selector)
+      String namespaceName,
+      Map<String, String> selector,
+      Map<String, String> withoutSelector,
+      String containerName) {
+    return getFabric8PodController(
+            AppsAPIGroupDSL::deployments, namespaceName, selector, withoutSelector)
         .map(deployment -> createPodControllerFrom(deployment, containerName));
   }
 
   public Optional<PodController> getStatefulSet(
-      String namespaceName, Map<String, String> selector, String containerName) {
-    return getFabric8PodController(AppsAPIGroupDSL::statefulSets, namespaceName, selector)
+      String namespaceName,
+      Map<String, String> selector,
+      Map<String, String> withoutSelector,
+      String containerName) {
+    return getFabric8PodController(
+            AppsAPIGroupDSL::statefulSets, namespaceName, selector, withoutSelector)
         .map((statefulSet -> createPodControllerFrom(statefulSet, containerName)))
         .map(PodController::withTypeToStatefulSet);
   }
@@ -51,9 +59,10 @@ public class PodControllersClient {
                   MixedOperation<T, TList, DoneableT, RollableScalableResource<T, DoneableT>>>
               podController,
           String namespaceName,
-          Map<String, String> selector) {
+          Map<String, String> selector,
+          Map<String, String> withoutSelector) {
     return podController.apply(kubernetesClient.apps()).inNamespace(namespaceName)
-        .withLabels(selector).list().getItems().stream()
+        .withLabels(selector).withoutLabels(withoutSelector).list().getItems().stream()
         .findFirst();
   }
 
@@ -69,7 +78,7 @@ public class PodControllersClient {
         determineStatusFrom(specReplicas, unavailableReplicas, availableReplicas, readyReplicas));
     podController.setVersion(
         determineVersionFrom(
-            controller.getSpec().getTemplate().getSpec().getContainers(), containerName)
+                controller.getSpec().getTemplate().getSpec().getContainers(), containerName)
             .orElse(PodController.UNKNOWN_VERSION));
     return podController;
   }
@@ -86,7 +95,7 @@ public class PodControllersClient {
         determineStatusFrom(specReplicas, unavailableReplicas, availableReplicas, readyReplicas));
     podController.setVersion(
         determineVersionFrom(
-            controller.getSpec().getTemplate().getSpec().getContainers(), containerName)
+                controller.getSpec().getTemplate().getSpec().getContainers(), containerName)
             .orElse(PodController.UNKNOWN_VERSION));
     return podController;
   }

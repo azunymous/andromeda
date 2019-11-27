@@ -5,22 +5,30 @@ import io.fabric8.kubernetes.client.KubernetesClientException;
 import net.igiari.andromeda.collector.cluster.Environment;
 import net.igiari.andromeda.collector.cluster.PodController;
 import net.igiari.andromeda.collector.cluster.PodControllerType;
+import net.igiari.andromeda.collector.config.CanaryConfiguration;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Collections.emptyMap;
 import static net.igiari.andromeda.collector.cluster.PodController.empty;
 
 public class EnvironmentsClient {
   private KubernetesClient kubernetesClient;
   private PodControllersClient podControllersClient;
   private PodsClient podsClient;
+  private CanaryConfiguration canaryConfiguration;
 
   public EnvironmentsClient(
-      KubernetesClient kubernetesClient, PodControllersClient podControllersClient, PodsClient podsClient) {
+      KubernetesClient kubernetesClient,
+      PodControllersClient podControllersClient,
+      PodsClient podsClient,
+      CanaryConfiguration canaryConfiguration) {
     this.kubernetesClient = kubernetesClient;
     this.podControllersClient = podControllersClient;
     this.podsClient = podsClient;
+    this.canaryConfiguration = canaryConfiguration;
   }
 
   public Optional<Environment> getEnvironment(
@@ -34,10 +42,28 @@ public class EnvironmentsClient {
     }
 
     Optional<PodController> podController =
-        getPodController(namespaceName, type, selector, containerName);
-    podController.ifPresent(pc -> pc.setPods(podsClient.getPods(namespaceName, selector, containerName)));
+        getPodController(
+            namespaceName, type, selector, canaryConfiguration.getSelector(), containerName);
+    podController.ifPresent(
+        pc ->
+            pc.setPods(
+                podsClient.getPods(
+                    namespaceName, selector, canaryConfiguration.getSelector(), containerName)));
 
-    Environment environment = new Environment(environmentName, namespaceName, podController.orElse(empty()));
+    Environment environment =
+        new Environment(environmentName, namespaceName, podController.orElse(empty()));
+
+    if (canaryConfiguration.isEnabled()) {
+      Map<String, String> canarySelector = new HashMap<>(selector);
+      canaryConfiguration.getSelector().forEach((k, v) -> canarySelector.merge(k, v, (a, b) -> b));
+//      canarySelector.forEach((k, v) -> canaryConfiguration.getSelector().merge(k, v, (a, b) -> a));
+      Optional<PodController> canary =
+          getPodController(namespaceName, type, canarySelector, emptyMap(), containerName);
+      canary.ifPresent(
+          c -> c.setPods(podsClient.getPods(namespaceName, selector, emptyMap(), containerName)));
+      canary.ifPresent(environment::setCanaryPodController);
+    }
+
     return Optional.of(environment);
   }
 
@@ -45,14 +71,18 @@ public class EnvironmentsClient {
       String namespaceName,
       PodControllerType type,
       Map<String, String> selector,
+      Map<String, String> withoutSelector,
       String containerName) {
     switch (type) {
       case DEPLOYMENT:
-        return podControllersClient.getDeployment(namespaceName, selector, containerName);
+        return podControllersClient.getDeployment(
+            namespaceName, selector, withoutSelector, containerName);
       case STATEFULSET:
-        return podControllersClient.getStatefulSet(namespaceName, selector, containerName);
+        return podControllersClient.getStatefulSet(
+            namespaceName, selector, withoutSelector, containerName);
+      default:
+        throw new IllegalStateException();
     }
-    return Optional.empty();
   }
 
   private boolean namespaceExists(String namespaceName) {

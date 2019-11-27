@@ -1,6 +1,7 @@
 package net.igiari.andromeda.collector.clients;
 
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
+import io.fabric8.kubernetes.api.model.LabelSelectorBuilder;
 import io.fabric8.kubernetes.api.model.apps.DoneableDeployment;
 import io.fabric8.kubernetes.api.model.apps.DoneableStatefulSet;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
@@ -11,10 +12,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static net.igiari.andromeda.collector.cluster.PodControllerType.DEPLOYMENT;
 import static net.igiari.andromeda.collector.cluster.PodControllerType.STATEFULSET;
@@ -25,6 +28,7 @@ class PodControllersClientTest {
   private static final String CONTROLLER_NAME = "deploymentName";
   private static final String CONTAINER_NAME = "deploymentName";
   private static final Map<String, String> SELECTOR = singletonMap("app", "appLabel");
+  private static final Map<String, String> WITHOUT_SELECTOR = emptyMap();
   private static final String IMAGE = "host/path/imageName:v1.22.333";
 
   @Rule public KubernetesServer server = new KubernetesServer(true, true);
@@ -50,7 +54,7 @@ class PodControllersClientTest {
     givenDeployment().done();
 
     Optional<PodController> gotPodController =
-        podControllersClient.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME);
+        podControllersClient.getDeployment(NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME);
 
     PodController expectedPodController =
         new PodController(CONTROLLER_NAME, emptyList(), DEPLOYMENT);
@@ -62,7 +66,7 @@ class PodControllersClientTest {
     givenStatefulSet().done();
 
     Optional<PodController> gotPodController =
-        podControllersClient.getStatefulSet(NAMESPACE, SELECTOR, CONTAINER_NAME);
+        podControllersClient.getStatefulSet(NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME);
 
     PodController expectedPodController =
         new PodController(CONTROLLER_NAME, emptyList(), STATEFULSET);
@@ -79,7 +83,9 @@ class PodControllersClientTest {
         .endStatus()
         .done();
 
-    assertThat(podControllersClient.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(
+            podControllersClient.getDeployment(
+                NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.UNAVAILABLE);
   }
@@ -94,7 +100,9 @@ class PodControllersClientTest {
         .endStatus()
         .done();
 
-    assertThat(podControllersClient.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(
+            podControllersClient.getDeployment(
+                NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.LIVE);
   }
@@ -109,7 +117,9 @@ class PodControllersClientTest {
         .endStatus()
         .done();
 
-    assertThat(podControllersClient.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(
+            podControllersClient.getDeployment(
+                NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.LIVE);
   }
@@ -124,7 +134,9 @@ class PodControllersClientTest {
         .endStatus()
         .done();
 
-    assertThat(podControllersClient.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(
+            podControllersClient.getDeployment(
+                NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.READY);
   }
@@ -133,7 +145,9 @@ class PodControllersClientTest {
   void scaledDownStatusWhenNoReplicasExpected_deployment() {
     givenDeployment().editOrNewSpec().withReplicas(0).endSpec().done();
 
-    assertThat(podControllersClient.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(
+            podControllersClient.getDeployment(
+                NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.SCALED_DOWN);
   }
@@ -147,7 +161,9 @@ class PodControllersClientTest {
         .endStatus()
         .done();
 
-    assertThat(podControllersClient.getStatefulSet(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(
+            podControllersClient.getStatefulSet(
+                NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.UNAVAILABLE);
   }
@@ -161,7 +177,9 @@ class PodControllersClientTest {
         .endStatus()
         .done();
 
-    assertThat(podControllersClient.getStatefulSet(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(
+            podControllersClient.getStatefulSet(
+                NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.LIVE);
   }
@@ -175,7 +193,9 @@ class PodControllersClientTest {
         .endStatus()
         .done();
 
-    assertThat(podControllersClient.getStatefulSet(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(
+            podControllersClient.getStatefulSet(
+                NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.LIVE);
   }
@@ -189,7 +209,9 @@ class PodControllersClientTest {
         .endStatus()
         .done();
 
-    assertThat(podControllersClient.getStatefulSet(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(
+            podControllersClient.getStatefulSet(
+                NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.READY);
   }
@@ -198,7 +220,9 @@ class PodControllersClientTest {
   void scaledDownStatusWhenNoReplicasExpected_statefulSet() {
     givenStatefulSet().editOrNewSpec().withReplicas(0).endSpec().done();
 
-    assertThat(podControllersClient.getStatefulSet(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(
+            podControllersClient.getStatefulSet(
+                NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("status", Status.SCALED_DOWN);
   }
@@ -207,7 +231,9 @@ class PodControllersClientTest {
   void getVersion() {
     givenDeployment().done();
 
-    assertThat(podControllersClient.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(
+            podControllersClient.getDeployment(
+                NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("version", "1.22.333");
   }
@@ -226,9 +252,69 @@ class PodControllersClientTest {
         .endSpec()
         .done();
 
-    assertThat(podControllersClient.getDeployment(NAMESPACE, SELECTOR, CONTAINER_NAME))
+    assertThat(
+            podControllersClient.getDeployment(
+                NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME))
         .get()
         .hasFieldOrPropertyWithValue("version", "hash1234");
+  }
+
+  @Test
+  void getsCanaryDeployment() {
+    final Map<String, String> canarySelector = Map.of("app", "appName", "canary", "enabled");
+    givenDeployment()
+        .editMetadata()
+        .withName("deploymentNameCanary")
+        .withLabels(canarySelector)
+        .endMetadata()
+        .done();
+    PodController expectedPodController =
+        new PodController("deploymentNameCanary", emptyList(), DEPLOYMENT);
+    assertThat(
+            podControllersClient.getDeployment(
+                NAMESPACE, canarySelector, emptyMap(), CONTAINER_NAME))
+        .contains(expectedPodController);
+  }
+
+  @Test
+  void getsNonCanaryDeploymentWhenExcludingCanary() {
+    final Map<String, String> canaryOnlySelector = Map.of("canary", "enabled");
+    final Map<String, String> canarySelector = new HashMap<>(SELECTOR);
+    canarySelector.putAll(canaryOnlySelector);
+
+    givenDeployment()
+        .editMetadata()
+        .withName("deploymentNameCanary")
+        .withLabels(canarySelector)
+        .endMetadata()
+        .done();
+
+    givenDeployment().editMetadata().withName(CONTROLLER_NAME).withLabels(SELECTOR).endMetadata().done();
+
+    PodController expectedPodController =
+        new PodController(CONTROLLER_NAME, emptyList(), DEPLOYMENT);
+    assertThat(
+        podControllersClient.getDeployment(
+            NAMESPACE, canarySelector, canaryOnlySelector, CONTAINER_NAME))
+        .contains(expectedPodController);
+  }
+
+  @Test
+  void getsNoNormalDeploymentWhenOnlyCanaryExistsWhenExcludingCanary() {
+    final Map<String, String> canaryOnlySelector = Map.of("canary", "enabled");
+    final Map<String, String> canarySelector = new HashMap<>(SELECTOR);
+    canarySelector.putAll(canaryOnlySelector);
+
+    givenDeployment()
+        .editMetadata()
+        .withName("deploymentNameCanary")
+        .withLabels(canarySelector)
+        .endMetadata()
+        .done();
+
+    assertThat(
+        podControllersClient.getDeployment(
+            NAMESPACE, canarySelector, canaryOnlySelector, CONTAINER_NAME)).isEmpty();
   }
 
   @AfterEach
@@ -248,6 +334,7 @@ class PodControllersClientTest {
         .withLabels(SELECTOR)
         .endMetadata()
         .withNewSpec()
+        .withSelector(new LabelSelectorBuilder().withMatchLabels(SELECTOR).build())
         .withReplicas(3)
         .withNewTemplate()
         .withNewSpec()

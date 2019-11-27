@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,6 +24,7 @@ class PodsClientTest {
   private static final String CONTROLLER_NAME = "deploymentName";
   private static final String CONTAINER_NAME = "deploymentName";
   private static final Map<String, String> SELECTOR = singletonMap("app", "appLabel");
+  private static final Map<String, String> WITHOUT_SELECTOR = emptyMap();
   private static final String IMAGE = "host/path/imageName:v1.22.333";
   private static final String POD_NAME = "pod1";
 
@@ -48,7 +50,7 @@ class PodsClientTest {
   void getPods() {
     givenDeploymentWithPods().done();
 
-    List<Pod> pods = podsClient.getPods(NAMESPACE, SELECTOR, CONTAINER_NAME);
+    List<Pod> pods = podsClient.getPods(NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME);
     assertThat(pods).containsOnly(new Pod(POD_NAME, "1.22.333", Status.READY));
   }
 
@@ -62,10 +64,9 @@ class PodsClientTest {
         .endSpec()
         .done();
 
-    List<Pod> pods = podsClient.getPods(NAMESPACE, SELECTOR, CONTAINER_NAME);
+    List<Pod> pods = podsClient.getPods(NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME);
     assertThat(pods).containsOnly(new Pod(POD_NAME, "someHash", Status.READY));
   }
-
 
   @Test
   void runningButOneContainerNotReadyPodIsLiveButNotReady() {
@@ -81,10 +82,9 @@ class PodsClientTest {
         .endStatus()
         .done();
 
-    List<Pod> pods = podsClient.getPods(NAMESPACE, SELECTOR, CONTAINER_NAME);
+    List<Pod> pods = podsClient.getPods(NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME);
     assertThat(pods).containsOnly(new Pod(POD_NAME, "1.22.333", Status.LIVE));
   }
-
 
   @Test
   void runnningButNotReadyPodIsLiveButNotReady() {
@@ -97,7 +97,7 @@ class PodsClientTest {
         .endStatus()
         .done();
 
-    List<Pod> pods = podsClient.getPods(NAMESPACE, SELECTOR, CONTAINER_NAME);
+    List<Pod> pods = podsClient.getPods(NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME);
     assertThat(pods).containsOnly(new Pod(POD_NAME, "1.22.333", Status.LIVE));
   }
 
@@ -112,7 +112,7 @@ class PodsClientTest {
         .endStatus()
         .done();
 
-    List<Pod> pods = podsClient.getPods(NAMESPACE, SELECTOR, CONTAINER_NAME);
+    List<Pod> pods = podsClient.getPods(NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME);
     assertThat(pods).containsOnly(new Pod(POD_NAME, "1.22.333", Status.LIVE));
   }
 
@@ -127,9 +127,69 @@ class PodsClientTest {
         .endStatus()
         .done();
 
-    List<Pod> pods = podsClient.getPods(NAMESPACE, SELECTOR, CONTAINER_NAME);
+    List<Pod> pods = podsClient.getPods(NAMESPACE, SELECTOR, WITHOUT_SELECTOR, CONTAINER_NAME);
     assertThat(pods).containsOnly(new Pod(POD_NAME, "1.22.333", Status.UNAVAILABLE));
   }
+
+  @Test
+  void getCanaryPods() {
+    final Map<String, String> appCanarySelector = Map.of("app", "appName", "canary", "enabled");
+    givenDeploymentWithPods()
+        .editMetadata()
+        .withName("pod-canary")
+        .withLabels(appCanarySelector)
+        .endMetadata()
+        .done();
+    final Map<String, String> appSelector = Map.of("app", "appName");
+    givenDeploymentWithPods()
+        .editMetadata()
+        .withName("pod")
+        .withLabels(appSelector)
+        .endMetadata()
+        .done();
+
+    List<Pod> pods =
+        podsClient.getPods(NAMESPACE, appCanarySelector, emptyMap(), CONTAINER_NAME);
+    assertThat(pods).containsOnly(new Pod("pod-canary", "1.22.333", Status.READY));
+  }
+
+  @Test
+  void getPodsWithoutCanaryLabel() {
+    final Map<String, String> appCanarySelector = Map.of("app", "appName", "canary", "enabled");
+    givenDeploymentWithPods()
+        .editMetadata()
+        .withName("pod-canary")
+        .withLabels(appCanarySelector)
+        .endMetadata()
+        .done();
+    final Map<String, String> appSelector = Map.of("app", "appName");
+    givenDeploymentWithPods()
+        .editMetadata()
+        .withName("pod")
+        .withLabels(appSelector)
+        .endMetadata()
+        .done();
+
+    List<Pod> pods =
+        podsClient.getPods(NAMESPACE, appSelector, Map.of("canary", "enabled"), CONTAINER_NAME);
+    assertThat(pods).containsOnly(new Pod("pod", "1.22.333", Status.READY));
+  }
+
+  @Test
+  void getNoMatchingPods() {
+    final Map<String, String> appCanarySelector = Map.of("app", "appLabel", "canary", "enabled");
+    givenDeploymentWithPods()
+        .editMetadata()
+        .withName("pod-canary")
+        .withLabels(appCanarySelector)
+        .endMetadata()
+        .done();
+
+    List<Pod> pods =
+        podsClient.getPods(NAMESPACE, SELECTOR, Map.of("canary", "enabled"), CONTAINER_NAME);
+    assertThat(pods).isEmpty();
+  }
+
   @AfterEach
   void tearDown() {
     server.after();
