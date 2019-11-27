@@ -10,5 +10,8 @@ build:
     - image: aggregator
       jib:
         project: aggregator
+    - image: web
+      context: web
+
 deploy:
   kustomize: {}

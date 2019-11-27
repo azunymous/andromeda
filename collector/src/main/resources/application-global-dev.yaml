@@ -10,3 +10,5 @@ global:
           prefix: andromeda
         - name: aggregator
           prefix: andromeda
+        - name: web
+          prefix: andromeda
