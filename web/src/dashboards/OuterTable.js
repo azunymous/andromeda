@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {A, useRoutes, useRedirect} from 'hookrouter';
+import {A, useRoutes} from 'hookrouter';
 import TeamDashboard from "./TeamDashboard";
 import Config from "../Configuration";
 
@@ -63,6 +63,7 @@ function OuterTable(props) {
     } else {
         return (
             <div>
+                <span>
                 <ul>
                     {dataCentres.map((dataCentre, index) => {
                         return (
@@ -71,6 +72,21 @@ function OuterTable(props) {
                         );
                     })}
                 </ul>
+                </span>
+                <span>
+                    <ul>
+                        <li>
+                            <A href={`/${team}/${dataCentres}`}>
+                            CONTROLLERS
+                        </A>
+                        </li>
+                        <li>
+                            <A href={`/${team}/${dataCentres}/pods`}>
+                                PODS
+                            </A>
+                        </li>
+                    </ul>
+                </span>
                 {routeResult || "Error"}
             </div>
         )
