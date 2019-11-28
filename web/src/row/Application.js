@@ -1,7 +1,6 @@
 import React from 'react'
 
 function Application({application, headers, mode}) {
-    console.log(mode)
     return (
         <tr>
             <th scope="row">{application["name"]}</th>
@@ -14,8 +13,8 @@ function Application({application, headers, mode}) {
 }
 
 function Environment({index, environment, headers, mode}) {
-    console.log(index)
-    console.log(headers)
+    console.log(index);
+    console.log(headers);
     if (mode === "CONTROLLER" && environment["environmentName"] === headers[index]) {
         return (
             <td className={environment["podController"]["status"]}>

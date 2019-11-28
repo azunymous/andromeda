@@ -2,13 +2,22 @@ import React, {useEffect, useState} from 'react'
 import Config from "../Configuration";
 import {Table} from "reactstrap";
 import Application from "../row/Application";
+import {useQueryParams} from "hookrouter";
 
-function TeamDashboard({team, dataCentre, mode}) {
+function TeamDashboard({team, dataCentre}) {
+    const [queryParams, setQueryParams] = useQueryParams();
+    const {
+        mode = 'CONTROLLER'
+    } = queryParams;
+
     let [isLoading, setIsLoading] = useState(true);
     let [dashboard, setDashboard] = useState({});
     let [error, setError] = useState("");
 
     useEffect(fetchDashboard, []);
+    const viewHandler = (view) => {
+        setQueryParams({mode: view});
+    };
 
     function getDashboard(data) {
         if (data["clusterGroupDashboardList"] !== null) {
@@ -50,12 +59,6 @@ function TeamDashboard({team, dataCentre, mode}) {
 
     }
 
-    function displayEnvironments(headers, application) {
-        application["environments"].map((environment, index) => {
-            return (<td key={index}>{environment["podController"]["version"]}</td>);
-        });
-    }
-
     if (isLoading) {
         return (
             <div/>
@@ -68,24 +71,36 @@ function TeamDashboard({team, dataCentre, mode}) {
         )
     } else {
         return (
-            <Table dark>
-                <thead>
-                <tr>
-                    <th/>
-                    {dashboard["clusterGroupEnvironments"].map((environmentHeader, index) => {
-                        return (
-                            <th key={index}>{environmentHeader}</th>
-                        )
+            <div>
+                <span>
+                    <ul>
+                        <li>
+                              <a onClick={() => viewHandler("CONTROLLER")}>CONTROLLERS</a>
+                        </li>
+                        <li>
+                                <a onClick={() => viewHandler("POD")}>PODS</a>
+                        </li>
+                    </ul>
+                </span>
+                <Table dark>
+                    <thead>
+                    <tr>
+                        <th/>
+                        {dashboard["clusterGroupEnvironments"].map((environmentHeader, index) => {
+                            return (
+                                <th key={index}>{environmentHeader}</th>
+                            )
+                        })}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {dashboard["applications"].map((application, index) => {
+                        return (<Application key={index} application={application}
+                                             headers={dashboard["clusterGroupEnvironments"]} mode={mode}/>)
                     })}
-                </tr>
-                </thead>
-                <tbody>
-                {dashboard["applications"].map((application, index) => {
-                    return (<Application key={index} application={application}
-                                         headers={dashboard["clusterGroupEnvironments"]} mode={mode}/>)
-                })}
-                </tbody>
-            </Table>
+                    </tbody>
+                </Table>
+            </div>
         )
     }
 }

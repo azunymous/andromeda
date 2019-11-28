@@ -9,12 +9,10 @@ function OuterTable(props) {
     let [dataCentres, setDataCentres] = useState([]);
 
     const routes = {
-        '/': () => <TeamDashboard team={team} dataCentre="kubernetes"/>,
-        '/:dataCentre': ({dataCentre}) => <TeamDashboard team={team} dataCentre={dataCentre} mode={"CONTROLLER"}/>,
-        '/:dataCentre/pods': ({dataCentre}) => <TeamDashboard team={team} dataCentre={dataCentre} mode={"POD"}/>,
+        '/': () => <TeamDashboard team={team} dataCentre="kubernetes" mode={"CONTROLLER"}/>,
+        '/:dataCentre': ({dataCentre}) => <TeamDashboard team={team} dataCentre={dataCentre}/>,
     };
     const routeResult = useRoutes(routes);
-
     useEffect(fetchDataCentres, [props]);
 
     function getClusters(data) {
@@ -72,20 +70,6 @@ function OuterTable(props) {
                         );
                     })}
                 </ul>
-                </span>
-                <span>
-                    <ul>
-                        <li>
-                            <A href={`/${team}/${dataCentres}`}>
-                            CONTROLLERS
-                        </A>
-                        </li>
-                        <li>
-                            <A href={`/${team}/${dataCentres}/pods`}>
-                                PODS
-                            </A>
-                        </li>
-                    </ul>
                 </span>
                 {routeResult || "Error"}
             </div>
