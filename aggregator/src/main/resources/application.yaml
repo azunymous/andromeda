@@ -1,6 +1,6 @@
 spring:
   profiles:
-    include:
+    active:
       - local
   http:
     converters:

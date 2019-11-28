@@ -2,8 +2,6 @@ package net.igiari.andromeda.collector.cluster;
 
 import java.util.Objects;
 
-import static net.igiari.andromeda.collector.cluster.PodController.empty;
-
 public class Environment {
   private final String environmentName;
   private final String namespaceName;
@@ -14,7 +12,11 @@ public class Environment {
     this.environmentName = environmentName;
     this.namespaceName = namespaceName;
     this.podController = podController;
-    this.canaryPodController = empty();
+    this.canaryPodController = PodController.empty();
+  }
+
+  public static Environment empty() {
+    return new Environment("", "", PodController.empty());
   }
 
   public String getNamespaceName() {
@@ -46,10 +48,10 @@ public class Environment {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Environment that = (Environment) o;
-    return Objects.equals(environmentName, that.environmentName) &&
-        Objects.equals(namespaceName, that.namespaceName) &&
-        Objects.equals(podController, that.podController) &&
-        Objects.equals(canaryPodController, that.canaryPodController);
+    return Objects.equals(environmentName, that.environmentName)
+        && Objects.equals(namespaceName, that.namespaceName)
+        && Objects.equals(podController, that.podController)
+        && Objects.equals(canaryPodController, that.canaryPodController);
   }
 
   @Override
@@ -59,11 +61,17 @@ public class Environment {
 
   @Override
   public String toString() {
-    return "Environment{" +
-        "environmentName='" + environmentName + '\'' +
-        ", namespaceName='" + namespaceName + '\'' +
-        ", podController=" + podController +
-        ", canaryPodController=" + canaryPodController +
-        '}';
+    return "Environment{"
+        + "environmentName='"
+        + environmentName
+        + '\''
+        + ", namespaceName='"
+        + namespaceName
+        + '\''
+        + ", podController="
+        + podController
+        + ", canaryPodController="
+        + canaryPodController
+        + '}';
   }
 }
