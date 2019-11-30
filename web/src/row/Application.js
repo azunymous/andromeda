@@ -1,6 +1,8 @@
 import React from 'react'
 import {Badge, Button} from "reactstrap";
 
+import canaryImage from "./canary.svg"
+
 function Application({application, headers, mode}) {
     return (
         <tr>
@@ -18,7 +20,10 @@ function Environment({index, environment, headers, mode}) {
         return (
             <td className={environment["podController"]["status"]}>
                 <Button size="lg" block
-                        color={colorFrom(environment["podController"]["status"])}> {environment["podController"]["version"]} </Button>
+                        color={colorFrom(environment["podController"]["status"])}> {environment["podController"]["version"]}
+                    {showCanary(environment["canaryPodController"])}
+                </Button>
+
             </td>
         )
     } else if ((mode === "POD" || mode === "DEPENDENCY") && environment["environmentName"] === headers[index]) {
@@ -32,6 +37,16 @@ function Environment({index, environment, headers, mode}) {
     return (
         <td className={"EMPTY"}/>
     )
+}
+
+function showCanary(canary) {
+    if (canary["name"] === "") {
+        return <span className={"noCanary"}/>
+    }
+    return <div>
+        <span className={"canaryIconCircle bg-" + colorFrom(canary["status"])}><img className={"canaryIcon"} src={canaryImage} alt="canary - "/></span>
+        <span className="canaryVersion">{canary["version"]}</span>
+    </div>
 }
 
 function colorFrom(status) {

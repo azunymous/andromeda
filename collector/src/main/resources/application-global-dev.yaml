@@ -2,7 +2,7 @@ global:
   canary:
     enabled: true
     selector:
-      type: canary
+      variant: canary
   teams:
     - name: andromeda
       applications:

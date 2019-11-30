@@ -4,5 +4,6 @@ namespace: andromeda-dev
 resources:
   - namespace.yml
   - collector/platform/dev
+  - collector/platform/canary
   - aggregator/platform/dev
   - web/platform/base

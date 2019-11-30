@@ -1,17 +1,52 @@
 html, body {
-  height: 100%;
+    height: 100%;
 }
 
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.canaryIconCircle {
+    display: inline-block;
+    -moz-border-radius: 20px; /* or 50% */
+    /* or 50% */
+    color: white;
+    /*text-align: center;*/
+
+    font-size: 14px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 25px;
+    border: 1px solid white;
+    margin: 5px;
+}
+
+.canaryIcon {
+    margin-bottom: 5px;
+    max-width: 20px;
+    max-height: 20px;
+    filter: brightness(0) invert(1);
+}
+
+.canaryVersion {
+    font-size: 15px;
+    text-align: center;
+    line-height: 25px;
+    margin-left: auto;
+    margin-right: auto;
+    border-top: 1px solid white;
+    border-radius: 3px;
+    width: 80%;
 }
