@@ -98,6 +98,8 @@ class EnvironmentsClientTest {
         .isEqualTo(PodController.empty());
   }
 
+  // TODO Add tests for calling pod client correctly with and without canary selectors.
+
   private void createNamespace(String namespace) {
     server
         .getClient()

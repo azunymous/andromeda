@@ -56,11 +56,10 @@ public class EnvironmentsClient {
     if (canaryConfiguration.isEnabled()) {
       Map<String, String> canarySelector = new HashMap<>(selector);
       canaryConfiguration.getSelector().forEach((k, v) -> canarySelector.merge(k, v, (a, b) -> b));
-//      canarySelector.forEach((k, v) -> canaryConfiguration.getSelector().merge(k, v, (a, b) -> a));
       Optional<PodController> canary =
           getPodController(namespaceName, type, canarySelector, emptyMap(), containerName);
       canary.ifPresent(
-          c -> c.setPods(podsClient.getPods(namespaceName, selector, emptyMap(), containerName)));
+          c -> c.setPods(podsClient.getPods(namespaceName, canarySelector, emptyMap(), containerName)));
       canary.ifPresent(environment::setCanaryPodController);
     }
 
