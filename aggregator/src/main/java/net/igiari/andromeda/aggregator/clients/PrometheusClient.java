@@ -42,7 +42,7 @@ public class PrometheusClient {
         .path("query")
         .queryParam(
             "query",
-            metricName + "{instance=\"" + podName + "\", namespace=\"" + namespaceName + "\"}[1m]")
+            metricName + "{pod_name=\"" + podName + "\", namespace=\"" + namespaceName + "\"}[1m]")
         .build()
         .toUri();
   }

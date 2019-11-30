@@ -35,6 +35,6 @@ public class CollectorClient {
   }
 
   private URI createURI(String team) {
-    return UriComponentsBuilder.fromUri(uri).pathSegment(team).build().toUri();
+    return UriComponentsBuilder.fromUri(uri).pathSegment("team").pathSegment(team).build().toUri();
   }
 }

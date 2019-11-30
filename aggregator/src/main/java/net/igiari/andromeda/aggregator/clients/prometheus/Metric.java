@@ -4,21 +4,21 @@ import com.google.gson.annotations.SerializedName;
 
 public class Metric{
 
-	@SerializedName("instance")
-	private String instance;
+	@SerializedName("pod_name")
+	private String podName;
 
 	@SerializedName("__name__")
 	private String name;
 
-	@SerializedName("dependencyName")
+	@SerializedName("dependency_name")
 	private String dependencyName;
 
-	public void setInstance(String instance){
-		this.instance = instance;
+	public void setPodName(String podName){
+		this.podName = podName;
 	}
 
-	public String getInstance(){
-		return instance;
+	public String getPodName(){
+		return podName;
 	}
 
 	public void setName(String name){
@@ -41,7 +41,7 @@ public class Metric{
  	public String toString(){
 		return 
 			"Metric{" + 
-			"instance = '" + instance + '\'' + 
+			"instance = '" + podName + '\'' +
 			",__name__ = '" + name + '\'' + 
 			",dependencyName = '" + dependencyName + '\'' +
 			"}";

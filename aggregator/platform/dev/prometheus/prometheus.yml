@@ -1,0 +1,26 @@
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+      - targets: ['localhost:9090']
+  - job_name: andromeda
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names: ["andromeda-dev"]
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: pod_name
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: namespace
+#     Only scrape "igiari.net/should_be_scraped = true" annotation.
+      - source_labels: [__meta_kubernetes_pod_annotation_igiari_net_should_be_scraped]
+        action: keep
+        regex: true
+    metrics_path: /actuator/prometheus

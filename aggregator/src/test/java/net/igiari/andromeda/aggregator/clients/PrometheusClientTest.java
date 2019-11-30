@@ -26,7 +26,7 @@ class PrometheusClientTest {
             + "      {\n"
             + "        \"metric\": {\n"
             + "          \"__name__\": \"downstream_dependency\",\n"
-            + "          \"instance\": \""
+            + "          \"pod_name\": \""
             + POD_NAME
             + "\",\n"
             + "          \"dependencyName\": \"prometheus\"\n"
@@ -45,7 +45,7 @@ class PrometheusClientTest {
             + "      {\n"
             + "        \"metric\": {\n"
             + "          \"__name__\": \"downstream_dependency\",\n"
-            + "          \"instance\": \""
+            + "          \"pod_name\": \""
             + POD_NAME
             + "\",\n"
             + "          \"dependencyName\": \"collector\"\n"
@@ -69,7 +69,7 @@ class PrometheusClientTest {
     httpClientMock
         .onGet(
             UriComponentsBuilder.fromUriString(
-                    "http://prometheus.local/api/v1/query?query=downstream_dependency{instance=\""
+                    "http://prometheus.local/api/v1/query?query=downstream_dependency{pod_name=\""
                         + POD_NAME
                         + "\", namespace=\""
                         + NAMESPACE_NAME

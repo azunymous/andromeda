@@ -76,6 +76,8 @@ read the version of specifically the `backend-app-container`.
 The aggregator requires configuring _cluster groups_ which each have a list of collector URIs. The cluster groups
 are logically grouped clusters e.g by region. 
 
+_Note: The collector URIs should not include the `team` path segment but point to the application root of the collector._
+
 Each cluster group is intended to be shown on one dashboard page.
 ```yaml
 aggregator:
@@ -83,8 +85,8 @@ aggregator:
     cluster-one:
       type: kubernetes
       collectors:
-       - http://my.other.cluster.com/team/
-       - http://another.cluster/team/
+       - http://my.other.cluster.com
+       - http://another.cluster/collector
     cluster-two:
       type: kubernetes
       collectors:
