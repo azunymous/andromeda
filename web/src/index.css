@@ -16,12 +16,20 @@ code {
     monospace;
 }
 
+.pod {
+    margin: 3px;
+}
+
+.versionPod {
+    display: inline;
+}
+
 .canaryIconCircle {
     display: inline-block;
-    -moz-border-radius: 20px; /* or 50% */
-    /* or 50% */
-    color: white;
-    /*text-align: center;*/
+-moz-border-radius: 20px; /* or 50% */
+/* or 50% */
+color: white;
+/*text-align: center;*/
 
     font-size: 14px;
     width: 28px;
@@ -33,10 +41,21 @@ code {
     margin: 5px;
 }
 
+
 .canaryIcon {
     margin-bottom: 5px;
-    max-width: 20px;
-    max-height: 20px;
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1);
+}
+
+.canaryIconPod {
+    display: inline;
+    float: left;
+    width: 20px;
+    height: 20px;
+    margin-right: 2px;
+    margin-bottom: 4px;
     filter: brightness(0) invert(1);
 }
 

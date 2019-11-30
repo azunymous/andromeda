@@ -24,6 +24,9 @@ public class PodDependencyTransformer implements ClusterGroupTransformer {
         for (Pod pod : environment.getPodController().getPods()) {
           pod.setDependencies(getDependenciesFor(pod, environment.getNamespaceName()));
         }
+        for (Pod pod : environment.getCanaryPodController().getPods()) {
+          pod.setDependencies(getDependenciesFor(pod, environment.getNamespaceName()));
+        }
       }
     }
     return dashboard;

@@ -23,6 +23,9 @@ public class FeatureFlagTransformer implements ClusterGroupTransformer {
         for (Pod pod : environment.getPodController().getPods()) {
           pod.setFeatureFlags(getFeatureFlagsFor(pod, environment.getNamespaceName()));
         }
+        for (Pod pod : environment.getCanaryPodController().getPods()) {
+          pod.setFeatureFlags(getFeatureFlagsFor(pod, environment.getNamespaceName()));
+        }
       }
     }
     return dashboard;

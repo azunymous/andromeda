@@ -30,6 +30,7 @@ function Environment({index, environment, headers, mode}) {
         return (
             <td>
                 <Pods key={index} pods={environment["podController"]["pods"]} dependencies={mode === "DEPENDENCY"}/>
+                {showCanaryPods(environment["canaryPodController"], mode === "DEPENDENCY")}
             </td>
         )
     }
@@ -44,9 +45,18 @@ function showCanary(canary) {
         return <span className={"noCanary"}/>
     }
     return <div>
-        <span className={"canaryIconCircle bg-" + colorFrom(canary["status"])}><img className={"canaryIcon"} src={canaryImage} alt="canary - "/></span>
+        <span className={"canaryIconCircle bg-" + colorFrom(canary["status"])}><img className={"canaryIcon"}
+                                                                                    src={canaryImage} alt="canary - "/></span>
         <span className="canaryVersion">{canary["version"]}</span>
     </div>
+}
+
+function showCanaryPods(canary, dependencies) {
+    if (canary["name"] === "") {
+        return <span className={"noCanary"}/>
+    }
+    return <Pods pods={canary["pods"]} dependencies={dependencies} canary/>
+
 }
 
 function colorFrom(status) {
@@ -69,14 +79,24 @@ function colorFromGauge(up) {
     }
 }
 
-function Pods({pods, dependencies}) {
+function Pods({pods, dependencies, canary}) {
+    function showCanaryImage(canary) {
+        if (canary) {
+            return (
+                <img className={"canaryIconPod"} src={canaryImage} alt="canary - "/>
+            )
+        }
+    }
+
     return (
         pods.map((pod, index) => {
             return (
+                <span className={"pod"}>
                 <Button key={index} color={colorFrom(pod["status"])} className={pod["status"] + " " + pod["name"]}>
-                    {pod["version"]}
+                    {showCanaryImage(canary)}<span className={"versionPod"}>{pod["version"]}</span>
                     <Dependencies enabled={dependencies} dependencies={pod["dependencies"]}/>
                 </Button>
+                </span>
             )
         }))
 }
