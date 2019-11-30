@@ -4,14 +4,12 @@ import net.igiari.andromeda.collector.cluster.PodControllerType;
 
 import java.util.Map;
 
-import static java.util.Collections.singletonMap;
-
 public class ApplicationConfig {
   private String name;
   // Namespace Prefix
   private String prefix;
   // Deployment/StatefulSet Labels to select on
-  private Map<String, String> selector;
+  private Map<String, String> selector;;
   private String deployment;
   private String statefulSet;
 
@@ -34,8 +32,10 @@ public class ApplicationConfig {
   }
 
   public Map<String, String> getSelector() {
-    if (selector == null) {
-      return singletonMap("app", name);
+    // HACK: Spring will use getSelector when trying to populate selector from configuration
+    // - resulting in a Map of app = null. The name != null check prevents this.
+    if (selector == null && name != null) {
+      return Map.of("app", name);
     }
     return selector;
   }
