@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    testing: liveness
+    willFail: "true"
+  name: liveness-exec
+spec:
+  selector:
+    matchLabels:
+      testing: liveness
+      willFail: "true"
+  template:
+    metadata:
+      labels:
+        testing: liveness
+        willFail: "true"
+    spec:
+      containers:
+        - name: liveness
+          image: busybox:1.31.1
+          args:
+            - /bin/sh
+            - -c
+            - touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600
+          livenessProbe:
+            exec:
+              command:
+                - cat
+                - /tmp/healthy
+            initialDelaySeconds: 5
+            periodSeconds: 5

@@ -67,7 +67,7 @@ function colorFrom(status) {
     } else if (status === "UNAVAILABLE") {
         return "danger"
     } else {
-        return ""
+        return "secondary"
     }
 }
 

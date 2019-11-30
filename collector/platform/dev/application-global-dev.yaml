@@ -12,3 +12,12 @@ global:
           prefix: andromeda
         - name: web
           prefix: andromeda
+    - name: galaxy
+      applications:
+        - name: nginx
+          prefix: nginx
+        - name: liveness
+          prefix: liveness
+          selector:
+            testing: liveness
+            willFail: "true"

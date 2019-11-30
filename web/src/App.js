@@ -19,7 +19,7 @@ function HomePage() {
     return (
         <ul>
             <li><a href={"/andromeda/"}>andromeda</a></li>
-            <li><a href={"/acme/"}>acme</a></li>
+            <li><a href={"/galaxy/"}>galaxy</a></li>
         </ul>
     )
 }

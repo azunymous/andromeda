@@ -1,9 +1,10 @@
 aggregator:
   prometheusURI: http://prometheus:9090/api/v1/
   clusters:
-    cluster-one:
+    kubernetes:
       type: kubernetes
       collectors:
        - http://collector:8080
   teams:
     - andromeda
+    - galaxy

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: liveness-exec
+spec:
+  template:
+    spec:
+      containers:
+      - name: liveness
+        image: busybox:1.31.1
+        args:
+          - /bin/sh
+          - -c
+          - touch /tmp/healthy; sleep 15; rm -rf /tmp/healthy; sleep 600
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/healthy
+          initialDelaySeconds: 5
+          periodSeconds: 20
