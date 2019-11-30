@@ -36,27 +36,20 @@ function Dashboard({team}) {
         setQueryParams({mode: view});
     };
 
-    function activeIf(link) {
-        if (mode === link) {
-            return "active"
-        }
-        return "disabled"
-    }
-
     return (
         <div className="container-fluid min-vh-100 bg-dark">
             <Navbar color="dark" dark expand="md">
                 <NavbarBrand href="/">{team}</NavbarBrand>
                 <Nav className="mr-auto" tabs>
                     <NavItem>
-                        <NavLink onClick={() => viewHandler("CONTROLLER")}
+                        <NavLink href="#" onClick={() => viewHandler("CONTROLLER")}
                                  active={mode === "CONTROLLER"}>Controllers</NavLink>
                     </NavItem>
                     <NavItem>
-                        <NavLink onClick={() => viewHandler("POD")} active={mode === "POD"}>Pods</NavLink>
+                        <NavLink href="#" onClick={() => viewHandler("POD")} active={mode === "POD"}>Pods</NavLink>
                     </NavItem>
                     <NavItem>
-                        <NavLink disabled href="#">Dependencies</NavLink>
+                        <NavLink href="#"onClick={() => viewHandler("DEPENDENCY")} active={mode === "DEPENDENCY"}>Dependencies</NavLink>
                     </NavItem>
                 </Nav>
                 <DataCentreTabs team={team}/>

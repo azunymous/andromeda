@@ -1,5 +1,5 @@
 import React from 'react'
-import {Button} from "reactstrap";
+import {Badge, Button} from "reactstrap";
 
 function Application({application, headers, mode}) {
     return (
@@ -14,19 +14,17 @@ function Application({application, headers, mode}) {
 }
 
 function Environment({index, environment, headers, mode}) {
-    console.log(index);
-    console.log(headers);
     if (mode === "CONTROLLER" && environment["environmentName"] === headers[index]) {
         return (
             <td className={environment["podController"]["status"]}>
-                <Button  size="lg" block
-                    color={colorFrom(environment["podController"]["status"])}> {environment["podController"]["version"]} </Button>
+                <Button size="lg" block
+                        color={colorFrom(environment["podController"]["status"])}> {environment["podController"]["version"]} </Button>
             </td>
         )
-    } else if (mode === "POD" && environment["environmentName"] === headers[index]) {
+    } else if ((mode === "POD" || mode === "DEPENDENCY") && environment["environmentName"] === headers[index]) {
         return (
             <td>
-                <Pods key={index} pods={environment["podController"]["pods"]}/>
+                <Pods key={index} pods={environment["podController"]["pods"]} dependencies={mode === "DEPENDENCY"}/>
             </td>
         )
     }
@@ -48,18 +46,38 @@ function colorFrom(status) {
     }
 }
 
-function Pods({pods}) {
+function colorFromGauge(up) {
+    if (up) {
+        return "success"
+    } else {
+        return "danger"
+    }
+}
 
-
+function Pods({pods, dependencies}) {
     return (
         pods.map((pod, index) => {
             return (
                 <Button key={index} color={colorFrom(pod["status"])} className={pod["status"] + " " + pod["name"]}>
                     {pod["version"]}
+                    <Dependencies enabled={dependencies} dependencies={pod["dependencies"]}/>
                 </Button>
             )
         }))
 }
 
+function Dependencies({enabled, dependencies}) {
+    console.log(dependencies);
+    if (enabled) {
+        return (
+            <div>
+                {dependencies.map((dependency, index) => {
+                    return <Badge key={index} color={colorFromGauge(dependency["up"])} pill>{dependency["name"]}</Badge>
+                })}
+            </div>
+        )
+    }
+    return (<span/>)
+}
 
 export default Application

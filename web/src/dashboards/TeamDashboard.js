@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import Config from "../options/Configuration";
 import {Table} from "reactstrap";
 import Application from "../row/Application";
@@ -15,31 +15,34 @@ function TeamDashboard({team}) {
     let [allDashboards, setAllDashboards] = useState(undefined);
     let [dashboard, setDashboard] = useState({});
     let [error, setError] = useState("");
-
-    useEffect(fetchDashboard, []);
-
     function clearError() {
+
         setError("");
     }
+    const getDashboard = useCallback(
+        (data) => {
+            if (data !== undefined && data["clusterGroupDashboardList"] !== null) {
+                if (data["clusterGroupDashboardList"][clustergroup] !== undefined) {
+                    return data["clusterGroupDashboardList"][clustergroup]
+                }
+            }
+            console.log("Could not find data for " + clustergroup)
+            setError("No data for " + clustergroup);
+            return {}
+        },
+        [clustergroup],
+    );
+
+
+    useEffect(fetchDashboard, []);
 
     useEffect(() => {
         clearError();
         if (allDashboards !== undefined) {
-        console.log("Changing dashboard")
+            console.log("Changing dashboard");
             setDashboard(getDashboard(allDashboards))
         }
-    }, [clustergroup]);
-
-    function getDashboard(data) {
-        if (data !== undefined && data["clusterGroupDashboardList"] !== null) {
-            if (data["clusterGroupDashboardList"][clustergroup] !== undefined) {
-                return data["clusterGroupDashboardList"][clustergroup]
-            }
-        }
-        console.log("Could not find data for " + clustergroup)
-        setError("No data for " + clustergroup);
-        return {}
-    }
+    }, [clustergroup, allDashboards, getDashboard]);
 
     function fetchDashboard() {
         console.log("Getting dashboards");
@@ -79,7 +82,7 @@ function TeamDashboard({team}) {
         console.log("ERROR!");
         return (
             <div>
-                <h4 className={"text-light " +clustergroup}>{error}</h4>
+                <h4 className={"text-light " + clustergroup}>{error}</h4>
             </div>
         )
     } else {
