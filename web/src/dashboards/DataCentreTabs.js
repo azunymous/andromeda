@@ -1,19 +1,22 @@
 import React, {useEffect, useState} from 'react';
-import {A, useRoutes} from 'hookrouter';
-import TeamDashboard from "./TeamDashboard";
-import Config from "../Configuration";
+import Config from "../options/Configuration";
+import {Nav, NavItem, NavLink} from "reactstrap";
+import {useQueryParams} from "hookrouter";
 
-function OuterTable(props) {
+function DataCentreTabs({team}) {
+    const [queryParams, setQueryParams] = useQueryParams();
+    const {
+        clustergroup = "kubernetes",
+    } = queryParams;
+
+    const clusterHandler = (input) => {
+        setQueryParams({clustergroup: input});
+    };
+
     let [isLoading, setIsLoading] = useState(true);
-    let [team] = useState(props["team"]);
     let [dataCentres, setDataCentres] = useState([]);
 
-    const routes = {
-        '/': () => <TeamDashboard team={team} dataCentre="kubernetes" mode={"CONTROLLER"}/>,
-        '/:dataCentre': ({dataCentre}) => <TeamDashboard team={team} dataCentre={dataCentre}/>,
-    };
-    const routeResult = useRoutes(routes);
-    useEffect(fetchDataCentres, [props]);
+    useEffect(fetchDataCentres, [team]);
 
     function getClusters(data) {
         let keys = [];
@@ -54,27 +57,26 @@ function OuterTable(props) {
 
     if (isLoading) {
         return (
-            <div>
-                Loading...
-            </div>
+            <Nav tabs>
+                <NavItem>
+                    <NavLink href="#" disabled/>
+                </NavItem>
+            </Nav>
         )
     } else {
         return (
-            <div>
-                <span>
-                <ul>
-                    {dataCentres.map((dataCentre, index) => {
-                        return (
-                            <li key={index}><A href={`/${team}/${dataCentre}`}>{dataCentre}</A>
-                            </li>
-                        );
-                    })}
-                </ul>
-                </span>
-                {routeResult || "Error"}
-            </div>
+            <Nav tabs>
+                {dataCentres.map((dataCentre, index) => {
+                    return (
+                        <NavItem key={index}>
+                            <NavLink onClick={() => clusterHandler(dataCentre)}
+                                     active={dataCentre === clustergroup}>{dataCentre}</NavLink>
+                        </NavItem>
+                    );
+                })}
+            </Nav>
         )
     }
 }
 
-export default OuterTable
+export default DataCentreTabs

@@ -1,32 +1,43 @@
 import React, {useEffect, useState} from 'react'
-import Config from "../Configuration";
+import Config from "../options/Configuration";
 import {Table} from "reactstrap";
 import Application from "../row/Application";
 import {useQueryParams} from "hookrouter";
 
-function TeamDashboard({team, dataCentre}) {
-    const [queryParams, setQueryParams] = useQueryParams();
+function TeamDashboard({team}) {
+    const [queryParams] = useQueryParams();
     const {
+        clustergroup = "kubernetes",
         mode = 'CONTROLLER'
     } = queryParams;
 
     let [isLoading, setIsLoading] = useState(true);
+    let [allDashboards, setAllDashboards] = useState(undefined);
     let [dashboard, setDashboard] = useState({});
     let [error, setError] = useState("");
 
     useEffect(fetchDashboard, []);
-    const viewHandler = (view) => {
-        setQueryParams({mode: view});
-    };
+
+    function clearError() {
+        setError("");
+    }
+
+    useEffect(() => {
+        clearError();
+        if (allDashboards !== undefined) {
+        console.log("Changing dashboard")
+            setDashboard(getDashboard(allDashboards))
+        }
+    }, [clustergroup]);
 
     function getDashboard(data) {
-        if (data["clusterGroupDashboardList"] !== null) {
-            if (data["clusterGroupDashboardList"][dataCentre] !== undefined) {
-                return data["clusterGroupDashboardList"][dataCentre]
+        if (data !== undefined && data["clusterGroupDashboardList"] !== null) {
+            if (data["clusterGroupDashboardList"][clustergroup] !== undefined) {
+                return data["clusterGroupDashboardList"][clustergroup]
             }
         }
-        console.log("Could not find data for " + dataCentre)
-        setError("No data for " + dataCentre);
+        console.log("Could not find data for " + clustergroup)
+        setError("No data for " + clustergroup);
         return {}
     }
 
@@ -50,6 +61,7 @@ function TeamDashboard({team, dataCentre}) {
                         // Handle error and retry
                     } else {
                         console.log(data);
+                        setAllDashboards(data);
                         setDashboard(getDashboard(data));
                         setIsLoading(false);
                     }
@@ -64,24 +76,15 @@ function TeamDashboard({team, dataCentre}) {
             <div/>
         )
     } else if (error !== "") {
+        console.log("ERROR!");
         return (
             <div>
-                <h4>{error}</h4>
+                <h4 className={"text-light " +clustergroup}>{error}</h4>
             </div>
         )
     } else {
         return (
             <div>
-                <span>
-                    <ul>
-                        <li>
-                              <a onClick={() => viewHandler("CONTROLLER")}>CONTROLLERS</a>
-                        </li>
-                        <li>
-                                <a onClick={() => viewHandler("POD")}>PODS</a>
-                        </li>
-                    </ul>
-                </span>
                 <Table dark>
                     <thead>
                     <tr>

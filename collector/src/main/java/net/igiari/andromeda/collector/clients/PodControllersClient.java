@@ -20,6 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 import static net.igiari.andromeda.collector.cluster.PodControllerType.DEPLOYMENT;
 
 public class PodControllersClient {
@@ -109,7 +110,8 @@ public class PodControllersClient {
         .filter(container -> container.getName().equals(containerName))
         .findFirst()
         .map(Container::getImage)
-        .flatMap(PodControllersClient::determineVersionFromImage);
+        .flatMap(PodControllersClient::determineVersionFromImage)
+        .or(() -> determineVersionFrom(containers.stream().limit(1).collect(toList()), null));
   }
 
   private static Optional<String> determineVersionFromImage(String imageUri) {

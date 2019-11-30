@@ -1,4 +1,5 @@
 import React from 'react'
+import {Button} from "reactstrap";
 
 function Application({application, headers, mode}) {
     return (
@@ -18,7 +19,8 @@ function Environment({index, environment, headers, mode}) {
     if (mode === "CONTROLLER" && environment["environmentName"] === headers[index]) {
         return (
             <td className={environment["podController"]["status"]}>
-                {environment["podController"]["version"]}
+                <Button  size="lg" block
+                    color={colorFrom(environment["podController"]["status"])}> {environment["podController"]["version"]} </Button>
             </td>
         )
     } else if (mode === "POD" && environment["environmentName"] === headers[index]) {
@@ -34,13 +36,27 @@ function Environment({index, environment, headers, mode}) {
     )
 }
 
+function colorFrom(status) {
+    if (status === "READY") {
+        return "success"
+    } else if (status === "LIVE" || status === "SCALED_DOWN") {
+        return "warning"
+    } else if (status === "UNAVAILABLE") {
+        return "danger"
+    } else {
+        return ""
+    }
+}
+
 function Pods({pods}) {
+
+
     return (
         pods.map((pod, index) => {
             return (
-                <span key={index} className={pod["status"] + " " + pod["name"]}>
-            {pod["version"]}
-          </span>
+                <Button key={index} color={colorFrom(pod["status"])} className={pod["status"] + " " + pod["name"]}>
+                    {pod["version"]}
+                </Button>
             )
         }))
 }
