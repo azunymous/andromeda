@@ -5,5 +5,10 @@ resources:
   - serviceaccount.yaml
   - roles.yaml
 patchesStrategicMerge:
-  - deployment-env-patch.yaml
+  - deployment-config.yaml
   - deployment-service-acccount-patch.yaml
+configMapGenerator:
+  - name: collector-config
+    files:
+      - application-global-dev.yaml
+      - application-cluster-dev.yaml

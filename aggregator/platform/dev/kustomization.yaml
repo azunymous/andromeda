@@ -8,8 +8,11 @@ resources:
   - prometheus/prometheus-service.yaml
   - prometheus/prometheus-ingress.yaml
 configMapGenerator:
+  - name: aggregator-config
+    files:
+      - application-dev.yaml
   - name: prometheus-config
     files:
       - prometheus/prometheus.yml
 patchesStrategicMerge:
-  - deployment-env-patch.yaml
+  - deployment-config.yaml
