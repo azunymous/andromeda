@@ -10,11 +10,30 @@ available via Prometheus metrics.
 
 
 # Getting started:
+## Deploy
+Currently there are no prebuilt containers available, however you can easily build the aggregator and collector containers
+via `./gradlew aggregator:jib --image <your aggregator image name>` and `./gradlew collector:jib --image <your collector image name>` . 
+_This requires Java 11._
 
+Configuration can be supplied through application-*.yml files. See the configuration section below for more information. 
+Configuration can be mounted as files via config maps and specified via environment variables as shown in 
+[this deployment patch](./collector/platform/dev/deployment-config.yaml).
+
+The web front end can be built with the given Dockerfile - `docker build web/`. _This requires docker._
+
+Before building the image, modify the [production env](./web/.env.production) to contain your aggregator's API URL.
+```dotenv
+REACT_APP_API_URL=http://my.aggregator.com
+``` 
+## Development
 Andromeda can be quickly deployed to minikube with `skaffold run`
 
 _You will require kubectl, kustomize, minikube, docker and skaffold_
+
 For ingresses to work you will need to add the minikube IP (`minikube ip`) and `igiari.local` to your /etc/hosts file.
+
+Further examples of how running applications would look can be seen with running `skaffold run -p example` which features
+2 dummy applications that can be messed with to see how the dashboard will change.
 
 # Pretext
 Andromeda is designed with the idea of deploying a collector into each cluster with a mounted service account bound with a cluster role similar to the default 
