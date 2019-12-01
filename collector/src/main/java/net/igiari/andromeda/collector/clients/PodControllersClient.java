@@ -136,10 +136,6 @@ public class PodControllersClient {
       return Status.SCALED_DOWN;
     }
 
-    if (unavailableReplicas != null && unavailableReplicas.equals(specReplicas)) {
-      return Status.UNAVAILABLE;
-    }
-
     if (readyReplicas != null && readyReplicas.equals(specReplicas)) {
       return Status.READY;
     }
@@ -148,6 +144,9 @@ public class PodControllersClient {
       return Status.LIVE;
     }
 
+    if (unavailableReplicas != null && unavailableReplicas != 0) {
+      return Status.UNAVAILABLE;
+    }
     return Status.UNKNOWN;
   }
 }
