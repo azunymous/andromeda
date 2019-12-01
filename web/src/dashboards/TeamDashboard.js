@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import Config from "../options/Configuration";
-import {Table} from "reactstrap";
+import {Spinner, Table} from "reactstrap";
 import Application from "../row/Application";
 import {useQueryParams} from "hookrouter";
 
@@ -15,10 +15,13 @@ function TeamDashboard({team}) {
     let [allDashboards, setAllDashboards] = useState(undefined);
     let [dashboard, setDashboard] = useState({});
     let [error, setError] = useState("");
+    let [reloading, setReloading] = useState(false);
+
     function clearError() {
 
         setError("");
     }
+
     const getDashboard = useCallback(
         (data) => {
             if (data !== undefined && data["clusterGroupDashboardList"] !== null) {
@@ -26,19 +29,26 @@ function TeamDashboard({team}) {
                     return data["clusterGroupDashboardList"][clustergroup]
                 }
             }
-            console.log("Could not find data for " + clustergroup)
+            console.log("Could not find data for " + clustergroup);
             setError("No data for " + clustergroup);
             return {}
         },
         [clustergroup],
     );
 
+    // Disabled for now. Add to the setTimeout in the reload useEffect to re-enable spinner when updating page.
+    function showTimer() {
+        setReloading(true);
+        setTimeout(() => {
+            setReloading(false)
+        }, 1000);
+    }
 
     useEffect(fetchDashboard, []);
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            console.log('10 second timer finished')
+            console.log('10 second timer finished');
             fetchDashboard()
         }, 10000);
         return () => clearTimeout(timer);
@@ -99,7 +109,8 @@ function TeamDashboard({team}) {
                 <Table dark className={"table-bordered"}>
                     <thead>
                     <tr>
-                        <th/>
+
+                        <th><Reloading show={reloading}/></th>
                         {dashboard["clusterGroupEnvironments"].map((environmentHeader, index) => {
                             return (
                                 <th key={index}>{environmentHeader}</th>
@@ -117,6 +128,13 @@ function TeamDashboard({team}) {
             </div>
         )
     }
+}
+
+function Reloading({show}) {
+    if (show) {
+        return <Spinner color="info" size="sm"/>
+    }
+    return <span/>
 }
 
 export default TeamDashboard
