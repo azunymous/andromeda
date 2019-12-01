@@ -1,9 +1,10 @@
 import React from 'react';
 import {useQueryParams, useRoutes} from 'hookrouter';
 import './App.css';
-import {Nav, Navbar, NavbarBrand, NavItem, NavLink} from "reactstrap";
+import {Container, Nav, Navbar, NavbarBrand, NavItem, NavLink} from "reactstrap";
 import DataCentreTabs from "./dashboards/DataCentreTabs";
 import TeamDashboard from "./dashboards/TeamDashboard";
+import Teams from "./Teams";
 
 function App() {
     const routes = {
@@ -17,10 +18,10 @@ function App() {
 
 function HomePage() {
     return (
-        <ul>
-            <li><a href={"/andromeda/"}>andromeda</a></li>
-            <li><a href={"/galaxy/"}>galaxy</a></li>
-        </ul>
+        <Container fluid className={"min-vh-100 bg-dark"}>
+            <Teams/>
+        </Container>
+
     )
 }
 
@@ -49,7 +50,8 @@ function Dashboard({team}) {
                         <NavLink href="#" onClick={() => viewHandler("POD")} active={mode === "POD"}>Pods</NavLink>
                     </NavItem>
                     <NavItem>
-                        <NavLink href="#"onClick={() => viewHandler("DEPENDENCY")} active={mode === "DEPENDENCY"}>Dependencies</NavLink>
+                        <NavLink href="#" onClick={() => viewHandler("DEPENDENCY")}
+                                 active={mode === "DEPENDENCY"}>Dependencies</NavLink>
                     </NavItem>
                 </Nav>
                 <DataCentreTabs team={team}/>
