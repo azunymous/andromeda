@@ -37,6 +37,14 @@ function TeamDashboard({team}) {
     useEffect(fetchDashboard, []);
 
     useEffect(() => {
+        const timer = setTimeout(() => {
+            console.log('10 second timer finished')
+            fetchDashboard()
+        }, 10000);
+        return () => clearTimeout(timer);
+    });
+
+    useEffect(() => {
         clearError();
         if (allDashboards !== undefined) {
             console.log("Changing dashboard");
@@ -88,7 +96,7 @@ function TeamDashboard({team}) {
     } else {
         return (
             <div>
-                <Table dark>
+                <Table dark className={"table-bordered"}>
                     <thead>
                     <tr>
                         <th/>

@@ -29,7 +29,7 @@ function Environment({index, environment, headers, mode}) {
     } else if ((mode === "POD" || mode === "DEPENDENCY") && environment["environmentName"] === headers[index]) {
         return (
             <td>
-                <Pods key={index} pods={environment["podController"]["pods"]} dependencies={mode === "DEPENDENCY"}/>
+                <Pods pods={environment["podController"]["pods"]} dependencies={mode === "DEPENDENCY"}/>
                 {showCanaryPods(environment["canaryPodController"], mode === "DEPENDENCY")}
             </td>
         )
@@ -91,8 +91,8 @@ function Pods({pods, dependencies, canary}) {
     return (
         pods.map((pod, index) => {
             return (
-                <span className={"pod"}>
-                <Button key={index} color={colorFrom(pod["status"])} className={pod["status"] + " " + pod["name"]}>
+                <span key={index} className={"pod"}>
+                <Button color={colorFrom(pod["status"])} className={pod["status"] + " " + pod["name"]}>
                     {showCanaryImage(canary)}<span className={"versionPod"}>{pod["version"]}</span>
                     <Dependencies enabled={dependencies} dependencies={pod["dependencies"]}/>
                 </Button>
@@ -102,12 +102,11 @@ function Pods({pods, dependencies, canary}) {
 }
 
 function Dependencies({enabled, dependencies}) {
-    console.log(dependencies);
     if (enabled) {
         return (
             <div>
                 {dependencies.map((dependency, index) => {
-                    return <Badge key={index} color={colorFromGauge(dependency["up"])} pill>{dependency["name"]}</Badge>
+                    return <Badge key={index} className={"dependency "} color={colorFromGauge(dependency["up"])} pill>{dependency["name"]}</Badge>
                 })}
             </div>
         )

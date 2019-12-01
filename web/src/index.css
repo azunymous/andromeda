@@ -16,6 +16,10 @@ code {
     monospace;
 }
 
+thead {
+    text-align: center;
+}
+
 .pod {
     margin: 3px;
 }
@@ -68,4 +72,9 @@ color: white;
     border-top: 1px solid white;
     border-radius: 3px;
     width: 80%;
+}
+
+.dependency {
+    border: 1px solid white;
+    margin: 1px;
 }
