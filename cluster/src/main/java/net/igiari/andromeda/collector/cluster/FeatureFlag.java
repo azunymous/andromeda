@@ -6,11 +6,16 @@ import java.util.Objects;
 
 public class FeatureFlag implements Nameable {
   private String name;
-  private double strategy;
+  private String strategy;
+
+  public FeatureFlag(String name, String strategy) {
+    this.name = name;
+    this.strategy = strategy;
+  }
 
   public FeatureFlag(String name, double strategy) {
     this.name = name;
-    this.strategy = strategy;
+    this.strategy = String.valueOf(strategy);
   }
 
   public String getName() {
@@ -21,11 +26,11 @@ public class FeatureFlag implements Nameable {
     this.name = name;
   }
 
-  public double getStrategy() {
+  public String getStrategy() {
     return strategy;
   }
 
-  public void setStrategy(double strategy) {
+  public void setStrategy(String strategy) {
     this.strategy = strategy;
   }
 
