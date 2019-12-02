@@ -107,7 +107,7 @@ public class PrometheusClient {
         prometheusResponse,
         result ->
             new FeatureFlag(
-                result.getMetric().getDependencyName(), getLastValue(result.getValues())));
+                result.getMetric().getFeatureFlagName(), getLastValue(result.getValues())));
   }
 
   private double getLastValue(List<List<Double>> values) {

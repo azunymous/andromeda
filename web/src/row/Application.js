@@ -95,9 +95,10 @@ function Pods({pods, dependencies, canary}) {
                 <Button color={colorFrom(pod["status"])} className={pod["status"] + " " + pod["name"]}>
                     {showCanaryImage(canary)}<span className={"versionPod"}>{pod["version"]}</span>
                     <Dependencies enabled={dependencies} dependencies={pod["dependencies"]}/>
+                    <FeatureFlags enabled={dependencies} featureFlags={pod["featureFlags"]}/>
                 </Button>
                 </span>
-            )
+            );
         }))
 }
 
@@ -107,6 +108,21 @@ function Dependencies({enabled, dependencies}) {
             <div>
                 {dependencies.map((dependency, index) => {
                     return <Badge key={index} className={"dependency "} color={colorFromGauge(dependency["up"])} pill>{dependency["name"]}</Badge>
+                })}
+            </div>
+        )
+    }
+    return (<span/>)
+}
+
+function FeatureFlags({enabled, featureFlags}) {
+    if (enabled) {
+        return (
+            <div>
+                {featureFlags.map((featureFlag, index) => {
+                    return <span key={index} >
+                        <Badge className={"featureFlag "} color="info"> {featureFlag["name"]} {featureFlag["strategy"]}</Badge>
+                    </span>
                 })}
             </div>
         )
