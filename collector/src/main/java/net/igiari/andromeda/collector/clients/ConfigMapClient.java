@@ -10,6 +10,7 @@ import java.util.Map;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
+// Currently unused.
 public class ConfigMapClient {
 
   private final KubernetesClient kubernetesClient;

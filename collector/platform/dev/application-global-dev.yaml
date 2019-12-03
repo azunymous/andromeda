@@ -16,6 +16,8 @@ global:
       applications:
         - name: nginx
           prefix: nginx
+        - name: flag
+          prefix: flag
         - name: liveness
           prefix: liveness
           selector:

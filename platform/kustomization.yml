@@ -7,3 +7,5 @@ resources:
 
   - failing-example/dev
   - failing-example/prod
+
+  - flag-example/stage

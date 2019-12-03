@@ -18,6 +18,10 @@ deploy:
 
 profiles:
   - name: example
+    build:
+      artifacts:
+        - image: flag
+          context: ./platform/flag-example
     deploy:
       kustomize:
         path: ./platform/

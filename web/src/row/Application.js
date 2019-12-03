@@ -23,7 +23,6 @@ function Environment({index, environment, headers, mode}) {
                         color={colorFrom(environment["podController"]["status"])}> {environment["podController"]["version"]}
                     {showCanary(environment["canaryPodController"])}
                 </Button>
-
             </td>
         )
     } else if ((mode === "POD" || mode === "DEPENDENCY") && environment["environmentName"] === headers[index]) {
@@ -59,26 +58,6 @@ function showCanaryPods(canary, dependencies) {
 
 }
 
-function colorFrom(status) {
-    if (status === "READY") {
-        return "success"
-    } else if (status === "LIVE" || status === "SCALED_DOWN") {
-        return "warning"
-    } else if (status === "UNAVAILABLE") {
-        return "danger"
-    } else {
-        return "secondary"
-    }
-}
-
-function colorFromGauge(up) {
-    if (up) {
-        return "success"
-    } else {
-        return "danger"
-    }
-}
-
 function Pods({pods, dependencies, canary}) {
     function showCanaryImage(canary) {
         if (canary) {
@@ -107,7 +86,8 @@ function Dependencies({enabled, dependencies}) {
         return (
             <div>
                 {dependencies.map((dependency, index) => {
-                    return <Badge key={index} className={"dependency "} color={colorFromGauge(dependency["up"])} pill>{dependency["name"]}</Badge>
+                    return <Badge key={index} className={"dependency "} color={colorFromGauge(dependency["up"])}
+                                  pill>{dependency["name"]}</Badge>
                 })}
             </div>
         )
@@ -120,14 +100,48 @@ function FeatureFlags({enabled, featureFlags}) {
         return (
             <div>
                 {featureFlags.map((featureFlag, index) => {
-                    return <span key={index} >
-                        <Badge className={"featureFlag "} color="info"> {featureFlag["name"]} {featureFlag["strategy"]}</Badge>
+                    return <span key={index}>
+                        <Badge className={"featureFlag "}
+                               color={colorFromStrategy(featureFlag["strategy"])}> {featureFlag["name"]}</Badge>
                     </span>
                 })}
             </div>
         )
     }
     return (<span/>)
+}
+
+function colorFrom(status) {
+    if (status === "READY") {
+        return "success"
+    } else if (status === "LIVE" || status === "SCALED_DOWN") {
+        return "warning"
+    } else if (status === "UNAVAILABLE") {
+        return "danger"
+    } else {
+        return "secondary"
+    }
+}
+
+function colorFromGauge(up) {
+    if (up) {
+        return "success"
+    } else {
+        return "danger"
+    }
+}
+
+// This must be in float format due to the way the API parses the prometheus float into a string.
+function colorFromStrategy(strategy) {
+    if (strategy === "0.0") {
+        return "secondary"
+    } else if (strategy === "1.0") {
+        return "info"
+    } else if (strategy === "2.0") {
+        return "dark"
+    } else {
+        return "warning"
+    }
 }
 
 export default Application
