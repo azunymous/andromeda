@@ -1,14 +1,13 @@
 package net.igiari.andromeda.aggregator.clients;
 
 import com.google.gson.Gson;
-import net.igiari.andromeda.collector.cluster.Team;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
+import net.igiari.andromeda.collector.cluster.Team;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class CollectorClient {
   private final HttpClient httpClient;
@@ -22,10 +21,9 @@ public class CollectorClient {
   }
 
   public CompletableFuture<Team> collect(String team) {
-    HttpRequest request = HttpRequest.newBuilder()
-        .uri(createURI(team))
-        .build();
-    return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+    HttpRequest request = HttpRequest.newBuilder().uri(createURI(team)).build();
+    return httpClient
+        .sendAsync(request, HttpResponse.BodyHandlers.ofString())
         .thenApply(HttpResponse::body)
         .thenApply(this::TeamFromJSON);
   }

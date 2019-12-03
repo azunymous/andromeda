@@ -1,11 +1,10 @@
 package net.igiari.andromeda.collector.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import static net.igiari.andromeda.collector.config.CanaryConfiguration.defaultCanaryConfiguration;
 
 import java.util.List;
-
-import static net.igiari.andromeda.collector.config.CanaryConfiguration.defaultCanaryConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties("global")

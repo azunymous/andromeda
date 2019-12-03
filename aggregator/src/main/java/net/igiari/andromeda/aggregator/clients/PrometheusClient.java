@@ -1,6 +1,16 @@
 package net.igiari.andromeda.aggregator.clients;
 
+import static java.util.Collections.emptyList;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.stream.Collectors.toList;
+
 import com.google.gson.Gson;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.List;
+import java.util.function.Function;
 import net.igiari.andromeda.aggregator.clients.prometheus.PrometheusResponse;
 import net.igiari.andromeda.aggregator.clients.prometheus.ResultItem;
 import net.igiari.andromeda.collector.cluster.Dependency;
@@ -10,17 +20,6 @@ import net.igiari.andromeda.collector.cluster.comparers.Nameable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.List;
-import java.util.function.Function;
-
-import static java.util.Collections.emptyList;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static java.util.stream.Collectors.toList;
 
 public class PrometheusClient {
   private Logger logger = LoggerFactory.getLogger(PrometheusClient.class);
@@ -96,7 +95,10 @@ public class PrometheusClient {
 
   private <T extends Nameable> List<T> applicationInfoFrom(
       PrometheusResponse prometheusResponse, Function<ResultItem, T> createAppInfo) {
-    return prometheusResponse.getData().getResult().stream()
+    return prometheusResponse
+        .getData()
+        .getResult()
+        .stream()
         .map(createAppInfo)
         .sorted(Compare::byName)
         .collect(toList());

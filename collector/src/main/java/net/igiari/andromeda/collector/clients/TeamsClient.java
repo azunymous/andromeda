@@ -1,17 +1,16 @@
 package net.igiari.andromeda.collector.clients;
 
+import static java.util.stream.Collectors.toList;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import net.igiari.andromeda.collector.cluster.Application;
 import net.igiari.andromeda.collector.cluster.Environment;
 import net.igiari.andromeda.collector.cluster.Team;
 import net.igiari.andromeda.collector.config.ClusterConfig;
 import net.igiari.andromeda.collector.config.GlobalConfig;
 import net.igiari.andromeda.collector.config.TeamConfig;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-
-import static java.util.stream.Collectors.toList;
 
 public class TeamsClient {
   private GlobalConfig globalConfig;
@@ -30,7 +29,8 @@ public class TeamsClient {
   public Team getTeam(String teamName) {
     Optional<TeamConfig> teamConfig = getTeamConfig(teamName);
     List<Application> teamApplications =
-        teamConfig.stream()
+        teamConfig
+            .stream()
             .map(TeamConfig::getApplications)
             .flatMap(Collection::stream)
             .map(
@@ -44,7 +44,8 @@ public class TeamsClient {
   }
 
   private List<String> getClusterEnvironments(List<Application> teamApplications) {
-    return teamApplications.stream()
+    return teamApplications
+        .stream()
         .flatMap(app -> app.getEnvironments().stream())
         .map(Environment::getEnvironmentName)
         .distinct()
@@ -53,7 +54,9 @@ public class TeamsClient {
   }
 
   private Optional<TeamConfig> getTeamConfig(String teamName) {
-    return globalConfig.getTeams().stream()
+    return globalConfig
+        .getTeams()
+        .stream()
         .filter(teamConfig -> teamConfig.getName().equals(teamName))
         .findFirst();
   }

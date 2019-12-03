@@ -1,7 +1,14 @@
 package net.igiari.andromeda.collector.clients;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonMap;
+import static net.igiari.andromeda.collector.config.CanaryConfiguration.defaultCanaryConfiguration;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
+import java.util.Map;
+import java.util.Optional;
 import net.igiari.andromeda.collector.cluster.Environment;
 import net.igiari.andromeda.collector.cluster.PodController;
 import net.igiari.andromeda.collector.cluster.PodControllerType;
@@ -10,14 +17,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.Map;
-import java.util.Optional;
-
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonMap;
-import static net.igiari.andromeda.collector.config.CanaryConfiguration.defaultCanaryConfiguration;
-import static org.assertj.core.api.Assertions.assertThat;
 
 class EnvironmentsClientTest {
   public static final String ENV = "env";
@@ -124,7 +123,8 @@ class EnvironmentsClientTest {
         String containerName) {
       if (selector.get("canary") != null) {
         return Optional.of(
-            new PodController(CONTROLLER_NAME + "-canary", emptyList(), PodControllerType.DEPLOYMENT));
+            new PodController(
+                CONTROLLER_NAME + "-canary", emptyList(), PodControllerType.DEPLOYMENT));
       }
       return Optional.of(
           new PodController(CONTROLLER_NAME, emptyList(), PodControllerType.DEPLOYMENT));

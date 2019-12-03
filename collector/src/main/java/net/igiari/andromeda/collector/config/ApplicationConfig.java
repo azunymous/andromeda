@@ -1,8 +1,7 @@
 package net.igiari.andromeda.collector.config;
 
-import net.igiari.andromeda.collector.cluster.PodControllerType;
-
 import java.util.Map;
+import net.igiari.andromeda.collector.cluster.PodControllerType;
 
 public class ApplicationConfig {
   private String name;

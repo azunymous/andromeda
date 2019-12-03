@@ -1,14 +1,13 @@
 package net.igiari.andromeda.aggregator.clients;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.google.gson.Gson;
 import com.pgssoft.httpclient.HttpClientMock;
+import java.net.URI;
 import net.igiari.andromeda.collector.cluster.Dependency;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.URI;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class PrometheusClientTest {
 
@@ -29,7 +28,7 @@ class PrometheusClientTest {
             + "          \"pod_name\": \""
             + POD_NAME
             + "\",\n"
-            + "          \"dependencyName\": \"prometheus\"\n"
+            + "          \"dependency_name\": \"prometheus\"\n"
             + "        },\n"
             + "        \"values\": [\n"
             + "          [\n"
@@ -48,7 +47,7 @@ class PrometheusClientTest {
             + "          \"pod_name\": \""
             + POD_NAME
             + "\",\n"
-            + "          \"dependencyName\": \"collector\"\n"
+            + "          \"dependency_name\": \"collector\"\n"
             + "        },\n"
             + "        \"values\": [\n"
             + "          [\n"

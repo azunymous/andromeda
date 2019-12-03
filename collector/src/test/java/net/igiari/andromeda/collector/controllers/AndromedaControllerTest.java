@@ -1,8 +1,16 @@
 package net.igiari.andromeda.collector.controllers;
 
+import static java.util.Collections.singletonList;
+
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
 import io.fabric8.kubernetes.api.model.ContainerStatusBuilder;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 import net.igiari.andromeda.collector.clients.Client;
 import net.igiari.andromeda.collector.cluster.Application;
 import net.igiari.andromeda.collector.cluster.Environment;
@@ -21,16 +29,6 @@ import org.junit.Rule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.IntStream;
-
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 
 class AndromedaControllerTest {
   @Rule public KubernetesServer server = new KubernetesServer(true, true);
@@ -74,7 +72,8 @@ class AndromedaControllerTest {
         new AndromedaController(globalConfig, clusterConfig, new Client(server.getClient()));
 
     Assertions.assertThat(andromedaController.team("alphabet")).isNotNull();
-    Assertions.assertThat(andromedaController.team("alphabet")).isEqualTo(expectedTeam("alphabet", "alice"));
+    Assertions.assertThat(andromedaController.team("alphabet"))
+        .isEqualTo(expectedTeam("alphabet", "alice"));
   }
 
   private Team expectedTeam(String teamName, String appName) {
@@ -82,22 +81,22 @@ class AndromedaControllerTest {
 
     Environment dev =
         new Environment(
-            "dev",
+            "-dev",
             appName + "-dev",
             new PodController("deployment-0", podsWithVersion(0), PodControllerType.DEPLOYMENT));
     Environment test =
         new Environment(
-            "test",
+            "-test",
             appName + "-test",
             new PodController("deployment-1", podsWithVersion(1), PodControllerType.DEPLOYMENT));
     Environment prod =
         new Environment(
-            "prod",
+            "-prod",
             appName + "-prod",
-            new PodController("deployment-2", podsWithVersion(2 ), PodControllerType.DEPLOYMENT));
+            new PodController("deployment-2", podsWithVersion(2), PodControllerType.DEPLOYMENT));
     Application application = new Application(appName, List.of(dev, test, prod));
 
-    return new Team(teamName, List.of(application), emptyList());
+    return new Team(teamName, List.of(application), List.of("-dev", "-test", "-prod"));
   }
 
   private List<Pod> podsWithVersion(int version) {

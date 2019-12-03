@@ -1,12 +1,7 @@
 package net.igiari.andromeda.aggregator.services;
 
-import net.igiari.andromeda.aggregator.clients.CollectorClient;
-import net.igiari.andromeda.aggregator.dashboard.ClusterGroupDashboard;
-import net.igiari.andromeda.collector.cluster.Application;
-import net.igiari.andromeda.collector.cluster.Environment;
-import net.igiari.andromeda.collector.cluster.comparers.Compare;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +10,13 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static java.util.stream.Collectors.toList;
+import net.igiari.andromeda.aggregator.clients.CollectorClient;
+import net.igiari.andromeda.aggregator.dashboard.ClusterGroupDashboard;
+import net.igiari.andromeda.collector.cluster.Application;
+import net.igiari.andromeda.collector.cluster.Environment;
+import net.igiari.andromeda.collector.cluster.comparers.Compare;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ClusterGroupDashboardService {
   private String clusterGroup;
@@ -30,8 +29,9 @@ public class ClusterGroupDashboardService {
     this.collectorClients = collectorClients;
   }
 
-  public Optional<ClusterGroupDashboard> createClusterGroupDashboard(String teamName ) {
-    return collectorClients.stream()
+  public Optional<ClusterGroupDashboard> createClusterGroupDashboard(String teamName) {
+    return collectorClients
+        .stream()
         .map(collectorClient -> collectorClient.collect(teamName))
         .map(cf -> cf.orTimeout(2, SECONDS))
         .filter(cf -> !cf.isCompletedExceptionally())
@@ -46,12 +46,12 @@ public class ClusterGroupDashboardService {
     List<Application> applications = new ArrayList<>();
     List<String> clusterGroupEnvironments = new ArrayList<>();
     Stream.of(t1.getApplications(), t2.getApplications()).forEach(applications::addAll);
-    Stream.of(t1.getClusterGroupEnvironments(), t2.getClusterGroupEnvironments()).forEach(clusterGroupEnvironments::addAll);
+    Stream.of(t1.getClusterGroupEnvironments(), t2.getClusterGroupEnvironments())
+        .forEach(clusterGroupEnvironments::addAll);
     return new ClusterGroupDashboard(applications, clusterGroupEnvironments);
   }
 
-  private ClusterGroupDashboard logAndIgnore(
-      Throwable throwable, String teamName) {
+  private ClusterGroupDashboard logAndIgnore(Throwable throwable, String teamName) {
     logger.warn(
         "Failed to get team " + teamName + " for cluster group " + clusterGroup + ": " + throwable);
     return null;
@@ -60,7 +60,9 @@ public class ClusterGroupDashboardService {
   private static ClusterGroupDashboard squashApplications(
       ClusterGroupDashboard clusterGroupDashboard) {
     List<Application> squashedApplications =
-        clusterGroupDashboard.getApplications().stream()
+        clusterGroupDashboard
+            .getApplications()
+            .stream()
             .collect(
                 Collectors.toMap(
                     Application::getName,

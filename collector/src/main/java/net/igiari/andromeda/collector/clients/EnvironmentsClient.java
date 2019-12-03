@@ -1,18 +1,17 @@
 package net.igiari.andromeda.collector.clients;
 
+import static java.util.Collections.emptyMap;
+import static net.igiari.andromeda.collector.cluster.PodController.empty;
+
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import net.igiari.andromeda.collector.cluster.Environment;
 import net.igiari.andromeda.collector.cluster.PodController;
 import net.igiari.andromeda.collector.cluster.PodControllerType;
 import net.igiari.andromeda.collector.config.CanaryConfiguration;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
-import static java.util.Collections.emptyMap;
-import static net.igiari.andromeda.collector.cluster.PodController.empty;
 
 public class EnvironmentsClient {
   private KubernetesClient kubernetesClient;
@@ -59,7 +58,9 @@ public class EnvironmentsClient {
       Optional<PodController> canary =
           getPodController(namespaceName, type, canarySelector, emptyMap(), containerName);
       canary.ifPresent(
-          c -> c.setPods(podsClient.getPods(namespaceName, canarySelector, emptyMap(), containerName)));
+          c ->
+              c.setPods(
+                  podsClient.getPods(namespaceName, canarySelector, emptyMap(), containerName)));
       canary.ifPresent(environment::setCanaryPodController);
     }
 

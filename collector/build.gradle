@@ -3,6 +3,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'java'
     id 'idea'
+    id 'com.github.sherter.google-java-format' version '0.8'
     id 'com.google.cloud.tools.jib' version '1.7.0'
 }
 

@@ -1,13 +1,12 @@
 package net.igiari.andromeda.aggregator.transformers;
 
+import java.util.List;
 import net.igiari.andromeda.aggregator.clients.PrometheusClient;
 import net.igiari.andromeda.aggregator.dashboard.ClusterGroupDashboard;
 import net.igiari.andromeda.collector.cluster.Application;
 import net.igiari.andromeda.collector.cluster.Environment;
 import net.igiari.andromeda.collector.cluster.FeatureFlag;
 import net.igiari.andromeda.collector.cluster.Pod;
-
-import java.util.List;
 
 public class FeatureFlagTransformer implements ClusterGroupTransformer {
   private PrometheusClient prometheusClient;

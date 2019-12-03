@@ -1,14 +1,13 @@
 package net.igiari.andromeda.collector.clients;
 
-import io.fabric8.kubernetes.api.model.ConfigMap;
-import io.fabric8.kubernetes.client.KubernetesClient;
-import net.igiari.andromeda.collector.cluster.FeatureFlag;
-
-import java.util.List;
-import java.util.Map;
-
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
+
+import io.fabric8.kubernetes.api.model.ConfigMap;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import java.util.List;
+import java.util.Map;
+import net.igiari.andromeda.collector.cluster.FeatureFlag;
 
 // Currently unused.
 public class ConfigMapClient {
@@ -24,8 +23,14 @@ public class ConfigMapClient {
       Map<String, String> selector,
       Map<String, String> withoutSelector,
       String configMapName) {
-    return kubernetesClient.configMaps().inNamespace(namespaceName).withLabels(selector)
-        .withoutLabels(withoutSelector).list().getItems().stream()
+    return kubernetesClient
+        .configMaps()
+        .inNamespace(namespaceName)
+        .withLabels(selector)
+        .withoutLabels(withoutSelector)
+        .list()
+        .getItems()
+        .stream()
         .filter(configMap -> configMap.getMetadata().getName().equals(configMapName))
         .findFirst()
         .map(this::CreateConfigMapFrom)
@@ -33,7 +38,10 @@ public class ConfigMapClient {
   }
 
   private List<FeatureFlag> CreateConfigMapFrom(ConfigMap configMap) {
-    return configMap.getData().entrySet().stream()
+    return configMap
+        .getData()
+        .entrySet()
+        .stream()
         .map((e) -> new FeatureFlag(e.getKey(), e.getValue()))
         .collect(toList());
   }

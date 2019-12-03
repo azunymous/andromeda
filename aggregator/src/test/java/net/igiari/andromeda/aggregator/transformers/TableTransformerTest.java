@@ -1,15 +1,14 @@
 package net.igiari.andromeda.aggregator.transformers;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.ArrayList;
+import java.util.List;
 import net.igiari.andromeda.aggregator.dashboard.ClusterGroupDashboard;
 import net.igiari.andromeda.collector.cluster.Application;
 import net.igiari.andromeda.collector.cluster.Environment;
 import net.igiari.andromeda.collector.cluster.PodController;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class TableTransformerTest {
 

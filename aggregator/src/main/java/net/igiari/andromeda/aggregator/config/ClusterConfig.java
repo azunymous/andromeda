@@ -6,8 +6,7 @@ public class ClusterConfig {
   private DataCenterType type;
   private List<String> collectors;
 
-  public ClusterConfig() {
-  }
+  public ClusterConfig() {}
 
   public DataCenterType getType() {
     return type;

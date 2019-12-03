@@ -2,6 +2,7 @@ package net.igiari.andromeda.aggregator.services.health;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
+import java.util.List;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -9,15 +10,14 @@ import org.springframework.boot.actuate.health.Status;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
-
 @Configuration
 public class HealthMetricConfig {
   @Bean
   MeterRegistryCustomizer<MeterRegistry> healthRegistryIndividualMetrics(
       HealthContributorRegistry healthRegistry) {
     return registry ->
-        healthRegistry.stream()
+        healthRegistry
+            .stream()
             .forEach(
                 contributor -> {
                   registry.gauge(

@@ -1,6 +1,14 @@
 package net.igiari.andromeda.aggregator.providers;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+
 import com.google.gson.Gson;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import net.igiari.andromeda.aggregator.clients.CollectorClient;
 import net.igiari.andromeda.aggregator.clients.PrometheusClient;
 import net.igiari.andromeda.aggregator.config.AggregatorConfig;
@@ -12,15 +20,6 @@ import net.igiari.andromeda.aggregator.transformers.FeatureFlagTransformer;
 import net.igiari.andromeda.aggregator.transformers.PodDependencyTransformer;
 import net.igiari.andromeda.aggregator.transformers.TableTransformer;
 import org.springframework.stereotype.Component;
-
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 @Component
 public class TeamDashboardServiceProvider {
@@ -57,7 +56,10 @@ public class TeamDashboardServiceProvider {
   private TeamDashboardService createFrom(
       AggregatorConfig aggregatorConfig, List<ClusterGroupTransformer> transformers) {
     final Map<String, ClusterGroupDashboardService> clusterGroupDashboardServices =
-        aggregatorConfig.getClusters().entrySet().stream()
+        aggregatorConfig
+            .getClusters()
+            .entrySet()
+            .stream()
             .collect(
                 toMap(
                     Map.Entry::getKey,
@@ -72,7 +74,9 @@ public class TeamDashboardServiceProvider {
   }
 
   private List<CollectorClient> createCollectorClients(ClusterConfig clusterConfig) {
-    return clusterConfig.getCollectors().stream()
+    return clusterConfig
+        .getCollectors()
+        .stream()
         .map(URI::create)
         .map(collector -> new CollectorClient(httpClient, collector, gson))
         .collect(toList());

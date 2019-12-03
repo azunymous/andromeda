@@ -1,18 +1,17 @@
 package net.igiari.andromeda.aggregator.services;
 
-import net.igiari.andromeda.aggregator.TeamUtilities;
-import net.igiari.andromeda.aggregator.clients.CollectorClient;
-import net.igiari.andromeda.aggregator.dashboard.ClusterGroupDashboard;
-import net.igiari.andromeda.collector.cluster.Team;
-import org.junit.jupiter.api.Test;
+import static net.igiari.andromeda.aggregator.TeamUtilities.createTeamClusterWithBoth;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-
-import static net.igiari.andromeda.aggregator.TeamUtilities.createTeamClusterWithBoth;
-import static org.assertj.core.api.Assertions.assertThat;
+import net.igiari.andromeda.aggregator.TeamUtilities;
+import net.igiari.andromeda.aggregator.clients.CollectorClient;
+import net.igiari.andromeda.aggregator.dashboard.ClusterGroupDashboard;
+import net.igiari.andromeda.collector.cluster.Team;
+import org.junit.jupiter.api.Test;
 
 class ClusterGroupDashboardServiceTest {
 

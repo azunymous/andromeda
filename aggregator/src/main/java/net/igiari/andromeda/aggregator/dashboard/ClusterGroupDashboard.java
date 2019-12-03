@@ -1,12 +1,11 @@
 package net.igiari.andromeda.aggregator.dashboard;
 
-import net.igiari.andromeda.collector.cluster.Application;
-import net.igiari.andromeda.collector.cluster.Team;
+import static java.util.Collections.emptyList;
 
 import java.util.List;
 import java.util.Objects;
-
-import static java.util.Collections.emptyList;
+import net.igiari.andromeda.collector.cluster.Application;
+import net.igiari.andromeda.collector.cluster.Team;
 
 public class ClusterGroupDashboard {
   private List<Application> applications;

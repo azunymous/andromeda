@@ -1,23 +1,22 @@
 package net.igiari.andromeda.collector.clients;
 
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonMap;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
 import io.fabric8.kubernetes.api.model.ContainerStatusBuilder;
 import io.fabric8.kubernetes.api.model.DoneablePod;
 import io.fabric8.kubernetes.api.model.apps.DoneableDeployment;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
+import java.util.List;
+import java.util.Map;
 import net.igiari.andromeda.collector.cluster.Pod;
 import net.igiari.andromeda.collector.cluster.Status;
 import org.junit.Rule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
-import java.util.Map;
-
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.singletonMap;
-import static org.assertj.core.api.Assertions.assertThat;
 
 class PodsClientTest {
   private static final String NAMESPACE = "ns1";
@@ -148,8 +147,7 @@ class PodsClientTest {
         .endMetadata()
         .done();
 
-    List<Pod> pods =
-        podsClient.getPods(NAMESPACE, appCanarySelector, emptyMap(), CONTAINER_NAME);
+    List<Pod> pods = podsClient.getPods(NAMESPACE, appCanarySelector, emptyMap(), CONTAINER_NAME);
     assertThat(pods).containsOnly(new Pod("pod-canary", "1.22.333", Status.READY));
   }
 

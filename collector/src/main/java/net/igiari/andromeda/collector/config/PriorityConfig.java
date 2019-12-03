@@ -1,8 +1,8 @@
 package net.igiari.andromeda.collector.config;
 
-import java.util.List;
-
 import static java.util.Collections.emptyList;
+
+import java.util.List;
 
 public class PriorityConfig {
   private List<String> first;

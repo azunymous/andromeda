@@ -1,6 +1,17 @@
 package net.igiari.andromeda.collector.clients;
 
+import static java.util.Collections.singletonList;
+import static net.igiari.andromeda.collector.config.CanaryConfiguration.defaultCanaryConfiguration;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.IntStream;
 import net.igiari.andromeda.collector.cluster.Application;
 import net.igiari.andromeda.collector.cluster.Environment;
 import net.igiari.andromeda.collector.cluster.PodController;
@@ -10,18 +21,6 @@ import net.igiari.andromeda.collector.config.PriorityConfig;
 import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.IntStream;
-
-import static java.util.Collections.singletonList;
-import static net.igiari.andromeda.collector.config.CanaryConfiguration.defaultCanaryConfiguration;
-import static org.assertj.core.api.Assertions.assertThat;
 
 class ApplicationsClientTest {
   private static final String NAMESPACE = "ns1";
@@ -60,7 +59,7 @@ class ApplicationsClientTest {
     assertThat(application).isNotNull();
     assertThat(application.getName()).isEqualTo("app");
     assertThat(application.getEnvironments())
-        .containsOnly(new Environment("env-1", "app-env-1", PodController.empty()));
+        .containsOnly(new Environment("-env-1", "app-env-1", PodController.empty()));
   }
 
   @Test

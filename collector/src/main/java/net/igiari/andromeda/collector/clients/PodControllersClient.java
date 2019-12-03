@@ -1,5 +1,9 @@
 package net.igiari.andromeda.collector.clients;
 
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
+import static net.igiari.andromeda.collector.cluster.PodControllerType.DEPLOYMENT;
+
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.KubernetesResourceList;
@@ -9,19 +13,14 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.AppsAPIGroupDSL;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.RollableScalableResource;
-import net.igiari.andromeda.collector.cluster.PodController;
-import net.igiari.andromeda.collector.cluster.Status;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
-import static net.igiari.andromeda.collector.cluster.PodControllerType.DEPLOYMENT;
+import net.igiari.andromeda.collector.cluster.PodController;
+import net.igiari.andromeda.collector.cluster.Status;
 
 public class PodControllersClient {
   private static final Pattern versionRegex = Pattern.compile("v(\\d+\\.\\d+\\.\\d+)");
@@ -62,8 +61,14 @@ public class PodControllersClient {
           String namespaceName,
           Map<String, String> selector,
           Map<String, String> withoutSelector) {
-    return podController.apply(kubernetesClient.apps()).inNamespace(namespaceName)
-        .withLabels(selector).withoutLabels(withoutSelector).list().getItems().stream()
+    return podController
+        .apply(kubernetesClient.apps())
+        .inNamespace(namespaceName)
+        .withLabels(selector)
+        .withoutLabels(withoutSelector)
+        .list()
+        .getItems()
+        .stream()
         .findFirst();
   }
 
@@ -106,7 +111,8 @@ public class PodControllersClient {
       return determineVersionFromImage(containers.get(0).getImage());
     }
 
-    return containers.stream()
+    return containers
+        .stream()
         .filter(container -> container.getName().equals(containerName))
         .findFirst()
         .map(Container::getImage)

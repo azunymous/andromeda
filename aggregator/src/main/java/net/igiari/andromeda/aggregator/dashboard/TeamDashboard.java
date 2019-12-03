@@ -7,7 +7,8 @@ public class TeamDashboard {
   private final String teamName;
   private final Map<String, ClusterGroupDashboard> clusterGroupDashboardList;
 
-  public TeamDashboard(String teamName, Map<String, ClusterGroupDashboard> clusterGroupDashboardList) {
+  public TeamDashboard(
+      String teamName, Map<String, ClusterGroupDashboard> clusterGroupDashboardList) {
     this.teamName = teamName;
     this.clusterGroupDashboardList = clusterGroupDashboardList;
   }

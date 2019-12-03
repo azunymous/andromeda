@@ -1,8 +1,8 @@
 package net.igiari.andromeda.collector.config;
 
-import java.util.Map;
-
 import static java.util.Collections.emptyMap;
+
+import java.util.Map;
 
 public class CanaryConfiguration {
   private boolean enabled;

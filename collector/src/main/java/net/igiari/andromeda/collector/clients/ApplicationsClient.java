@@ -1,14 +1,13 @@
 package net.igiari.andromeda.collector.clients;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import net.igiari.andromeda.collector.cluster.Application;
 import net.igiari.andromeda.collector.cluster.Environment;
 import net.igiari.andromeda.collector.config.ApplicationConfig;
 import net.igiari.andromeda.collector.config.PriorityConfig;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class ApplicationsClient {
   private KubernetesClient kubernetesClient;
@@ -27,7 +26,8 @@ public class ApplicationsClient {
   public Application getApplication(
       ApplicationConfig applicationConfig, List<String> namespaceSuffixes) {
     List<Environment> environments =
-        namespaceSuffixes.stream()
+        namespaceSuffixes
+            .stream()
             .map(
                 namespaceSuffix ->
                     this.environmentsClient.getEnvironment(

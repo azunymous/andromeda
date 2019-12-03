@@ -1,27 +1,26 @@
 package net.igiari.andromeda.collector.clients;
 
-import io.fabric8.kubernetes.api.model.ContainerBuilder;
-import io.fabric8.kubernetes.api.model.LabelSelectorBuilder;
-import io.fabric8.kubernetes.api.model.apps.DoneableDeployment;
-import io.fabric8.kubernetes.api.model.apps.DoneableStatefulSet;
-import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
-import net.igiari.andromeda.collector.cluster.PodController;
-import net.igiari.andromeda.collector.cluster.Status;
-import org.junit.Rule;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static net.igiari.andromeda.collector.cluster.PodControllerType.DEPLOYMENT;
 import static net.igiari.andromeda.collector.cluster.PodControllerType.STATEFULSET;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import io.fabric8.kubernetes.api.model.ContainerBuilder;
+import io.fabric8.kubernetes.api.model.LabelSelectorBuilder;
+import io.fabric8.kubernetes.api.model.apps.DoneableDeployment;
+import io.fabric8.kubernetes.api.model.apps.DoneableStatefulSet;
+import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import net.igiari.andromeda.collector.cluster.PodController;
+import net.igiari.andromeda.collector.cluster.Status;
+import org.junit.Rule;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class PodControllersClientTest {
   private static final String NAMESPACE = "ns1";
@@ -289,13 +288,18 @@ class PodControllersClientTest {
         .endMetadata()
         .done();
 
-    givenDeployment().editMetadata().withName(CONTROLLER_NAME).withLabels(SELECTOR).endMetadata().done();
+    givenDeployment()
+        .editMetadata()
+        .withName(CONTROLLER_NAME)
+        .withLabels(SELECTOR)
+        .endMetadata()
+        .done();
 
     PodController expectedPodController =
         new PodController(CONTROLLER_NAME, emptyList(), DEPLOYMENT);
     assertThat(
-        podControllersClient.getDeployment(
-            NAMESPACE, canarySelector, canaryOnlySelector, CONTAINER_NAME))
+            podControllersClient.getDeployment(
+                NAMESPACE, canarySelector, canaryOnlySelector, CONTAINER_NAME))
         .contains(expectedPodController);
   }
 
@@ -313,8 +317,9 @@ class PodControllersClientTest {
         .done();
 
     assertThat(
-        podControllersClient.getDeployment(
-            NAMESPACE, canarySelector, canaryOnlySelector, CONTAINER_NAME)).isEmpty();
+            podControllersClient.getDeployment(
+                NAMESPACE, canarySelector, canaryOnlySelector, CONTAINER_NAME))
+        .isEmpty();
   }
 
   @AfterEach
