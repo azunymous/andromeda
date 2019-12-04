@@ -31,16 +31,63 @@ class ClusterGroupDashboardServiceTest {
     assertThat(teamData).contains(createTeamClusterWithBoth());
   }
 
+  @Test
+  void failingCollectorIsIgnored() {
+    List<CollectorClient> aWorkingClientAndAFailingClient =
+        List.of(
+            new StubbedCollectorClient(CLUSTER1),
+            new StubbedCollectorClient(CLUSTER2).whichIsFailing());
+
+    ClusterGroupDashboardService clusterGroupDashboardService =
+        new ClusterGroupDashboardService("clusterGroup", aWorkingClientAndAFailingClient);
+    final Optional<ClusterGroupDashboard> teamData =
+        clusterGroupDashboardService.createClusterGroupDashboard("andromeda");
+    assertThat(teamData).isNotEmpty();
+    assertThat(teamData.get().getApplications())
+        .isEqualTo(TeamUtilities.createTeam().getApplications());
+  }
+
+  @Test
+  void multipleFailingCollectorsReturnEmptyOptional() {
+    List<CollectorClient> failingClients =
+        List.of(
+            new StubbedCollectorClient(CLUSTER1).whichIsFailing(),
+            new StubbedCollectorClient(CLUSTER2).whichIsFailing());
+
+    ClusterGroupDashboardService clusterGroupDashboardService =
+        new ClusterGroupDashboardService("clusterGroup", failingClients);
+    final Optional<ClusterGroupDashboard> teamData =
+        clusterGroupDashboardService.createClusterGroupDashboard("andromeda");
+    assertThat(teamData).isEmpty();
+  }
+
   private static class StubbedCollectorClient extends CollectorClient {
     private boolean differentCluster;
+    private boolean failing;
 
     StubbedCollectorClient(boolean differentCluster) {
       super(null, URI.create("collector.local"), null);
       this.differentCluster = differentCluster;
     }
 
+    StubbedCollectorClient whichIsFailing() {
+      failing = true;
+      return this;
+    }
+
     @Override
     public CompletableFuture<Team> collect(String team) {
+      if (failing) {
+        return CompletableFuture.supplyAsync(
+            () -> {
+              try {
+                Thread.sleep(3000);
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              }
+              return null;
+            });
+      }
       if (differentCluster) {
         return CompletableFuture.supplyAsync(TeamUtilities::createTeamInAnotherCluster);
       }

@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -30,15 +31,14 @@ public class ClusterGroupDashboardService {
   }
 
   public Optional<ClusterGroupDashboard> createClusterGroupDashboard(String teamName) {
-    return collectorClients
-        .stream()
+    return collectorClients.stream()
         .map(collectorClient -> collectorClient.collect(teamName))
         .map(cf -> cf.orTimeout(2, SECONDS))
-        .filter(cf -> !cf.isCompletedExceptionally())
         .map(cf -> cf.thenApply(ClusterGroupDashboard::create))
-        .reduce((cf1, cf2) -> cf1.thenCombine(cf2, ClusterGroupDashboardService::combine))
         .map(cf -> cf.exceptionally(throwable -> logAndIgnore(throwable, teamName)))
         .map(CompletableFuture::join)
+        .filter(Objects::nonNull)
+        .reduce(ClusterGroupDashboardService::combine)
         .map(ClusterGroupDashboardService::squashApplications);
   }
 
@@ -60,9 +60,7 @@ public class ClusterGroupDashboardService {
   private static ClusterGroupDashboard squashApplications(
       ClusterGroupDashboard clusterGroupDashboard) {
     List<Application> squashedApplications =
-        clusterGroupDashboard
-            .getApplications()
-            .stream()
+        clusterGroupDashboard.getApplications().stream()
             .collect(
                 Collectors.toMap(
                     Application::getName,
