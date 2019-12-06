@@ -1,9 +1,12 @@
 package net.igiari.andromeda.collector.clients;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static net.igiari.andromeda.collector.config.CanaryConfiguration.defaultCanaryConfiguration;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
@@ -97,7 +100,86 @@ class EnvironmentsClientTest {
         .isEqualTo(PodController.empty());
   }
 
-  // TODO Add tests for calling pod client correctly with and without canary selectors.
+  @Test
+  void podControllersClientIsCalledWithNamespaceAndSelector() {
+    createNamespace(NAMESPACE);
+    final PodControllersClient podControllersClientMock = mock(PodControllersClient.class);
+
+    environmentsClient =
+        new EnvironmentsClient(
+            server.getClient(),
+            podControllersClientMock,
+            new PodsClientStub(server.getClient()),
+            defaultCanaryConfiguration());
+
+    environmentsClient.getEnvironment(
+        ENV, NAMESPACE, PodControllerType.DEPLOYMENT, APP_LABEL, CONTAINER_NAME);
+
+    verify(podControllersClientMock)
+        .getDeployment(NAMESPACE, APP_LABEL, emptyMap(), CONTAINER_NAME);
+  }
+
+  @Test
+  void podsClientIsCalledWithNamespaceAndSelector() {
+    createNamespace(NAMESPACE);
+    final PodsClient podsClientMock = mock(PodsClient.class);
+
+    environmentsClient =
+        new EnvironmentsClient(
+            server.getClient(),
+            new PodControllersClientStub(server.getClient()),
+            podsClientMock,
+            defaultCanaryConfiguration());
+
+    environmentsClient.getEnvironment(
+        ENV, NAMESPACE, PodControllerType.DEPLOYMENT, APP_LABEL, CONTAINER_NAME);
+
+    verify(podsClientMock).getPods(NAMESPACE, APP_LABEL, emptyMap(), CONTAINER_NAME);
+  }
+
+  @Test
+  void podControllersClientIsCalledWithNamespaceAndCanaryMergedSelectorAndWithoutCanarySelector() {
+    createNamespace(NAMESPACE);
+    final PodControllersClient podControllersClientMock = mock(PodControllersClient.class);
+
+    environmentsClient =
+        new EnvironmentsClient(
+            server.getClient(),
+            podControllersClientMock,
+            new PodsClientStub(server.getClient()),
+            new CanaryConfiguration(true, Map.of("canary", "enabled")));
+
+    environmentsClient.getEnvironment(
+        ENV, NAMESPACE, PodControllerType.DEPLOYMENT, APP_LABEL, CONTAINER_NAME);
+
+    verify(podControllersClientMock)
+        .getDeployment(NAMESPACE, APP_LABEL, Map.of("canary", "enabled"), CONTAINER_NAME);
+    verify(podControllersClientMock)
+        .getDeployment(
+            NAMESPACE, Map.of("app", "appLabel", "canary", "enabled"), emptyMap(), CONTAINER_NAME);
+  }
+
+  @Test
+  void podsClientIsCalledWithNamespaceAndCanaryMergedSelectorAndWithoutCanarySelector() {
+    createNamespace(NAMESPACE);
+    final PodsClient podsClientMock = mock(PodsClient.class);
+
+    environmentsClient =
+        new EnvironmentsClient(
+            server.getClient(),
+            new PodControllersClientStub(server.getClient()),
+            podsClientMock,
+            new CanaryConfiguration(true, Map.of("canary", "enabled")));
+
+    environmentsClient.getEnvironment(
+        ENV, NAMESPACE, PodControllerType.DEPLOYMENT, APP_LABEL, CONTAINER_NAME);
+
+    verify(podsClientMock)
+        .getPods(NAMESPACE, APP_LABEL, Map.of("canary", "enabled"), CONTAINER_NAME);
+    verify(podsClientMock)
+        .getPods(
+            NAMESPACE, Map.of("app", "appLabel", "canary", "enabled"), emptyMap(), CONTAINER_NAME);
+  }
 
   private void createNamespace(String namespace) {
     server

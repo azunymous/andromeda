@@ -31,7 +31,8 @@ public class ClusterGroupDashboardService {
   }
 
   public Optional<ClusterGroupDashboard> createClusterGroupDashboard(String teamName) {
-    return collectorClients.stream()
+    return collectorClients
+        .stream()
         .map(collectorClient -> collectorClient.collect(teamName))
         .map(cf -> cf.orTimeout(2, SECONDS))
         .map(cf -> cf.thenApply(ClusterGroupDashboard::create))
@@ -60,7 +61,9 @@ public class ClusterGroupDashboardService {
   private static ClusterGroupDashboard squashApplications(
       ClusterGroupDashboard clusterGroupDashboard) {
     List<Application> squashedApplications =
-        clusterGroupDashboard.getApplications().stream()
+        clusterGroupDashboard
+            .getApplications()
+            .stream()
             .collect(
                 Collectors.toMap(
                     Application::getName,
