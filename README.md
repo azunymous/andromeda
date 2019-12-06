@@ -4,7 +4,7 @@
 
 - Backend APIs: Currently fetches version, liveness & readiness of deployments, statefulSets and pods. Dependencies, feature flags are 
 available via Prometheus metrics.
-- Frontend Dashboard: work in progress
+- Frontend Dashboard: Partially complete. Usable.
 
 ![andromeda screenshot](./docs/screenshot.png "Andromeda screenshot")
 
@@ -44,6 +44,7 @@ The aggregator should be deployed in only one cluster along with the web fronten
 to scrape all collectors via accessible ingresses or other multi-cluster networking.
 # Configuration
 Andromeda's configuration and scraping of Kubernetes clusters is based on selectors and namespaces. 
+For example configuration see the minikube [aggregator config](./aggregator/platform/dev/application-dev.yaml), [collector global config](./collector/platform/dev/application-global-dev.yaml) and [collector cluster config](./collector/platform/dev/application-cluster-dev.yaml)
 
 ## Collector
 Using a configured namespace prefix for an application and a selector, each collector will search for namespaces matching the configured
@@ -85,6 +86,14 @@ For the web-frontend, the collector will look at namespaces in turn:
 
 Then it will look for both deployments (by default) and pods with the specified selector. 
 In this case: `type = frontend`. 
+
+If a selector is not specified, `app` is used as the default key, and the `name` of the application as the value.
+This default key can be overridden via:
+```yaml
+global:
+  #  Sets the default key for when selectors are not configured. Defaults to 'app' as seen below.
+  defaultSelectorKey: app
+```
 
 The first container in the deployment's image is used to find the version and
 the deployment's replica availability is used to find the health.
@@ -153,3 +162,28 @@ The `prometheusURI` in the aggregator configuration should point to the promethe
 all application downstream_dependency and feature_flag metrics.
 
 Only dependencies are visible on the front end at this time.
+
+---
+#### Miscellaneous configuration
+_If these settings need to be configured, it usually means your selectors aren't queryable or specify identifying 
+attributes of objects that are meaningful and relevant to users._
+
+For more information about labels and selectors see: [kubernetes.io](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)
+
+It is possible to not use merge for canaries and instead apply a suffix in the collector global configuration via:
+```yaml
+global:
+  canary:
+    enabled: true
+    appendSuffix: -canary
+```
+This will apply the given suffix to all selectors for each app when discerning a canary deployment or pod.
+
+e.g For given selector `app: backend`, for canary deployments the collector will mark anything selected with
+ `app=backend-canary` as a canary deployment while marking `app=backend` as a normal deployment.
+
+
+This should be used instead of the canary selector configuration. If the canary selector is specified, the collector
+will continue to use it's inverse to mark normal deployments.
+
+---
