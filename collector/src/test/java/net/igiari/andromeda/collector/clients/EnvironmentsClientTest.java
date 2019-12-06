@@ -7,6 +7,7 @@ import static net.igiari.andromeda.collector.config.CanaryConfiguration.defaultC
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
@@ -117,6 +118,7 @@ class EnvironmentsClientTest {
 
     verify(podControllersClientMock)
         .getDeployment(NAMESPACE, APP_LABEL, emptyMap(), CONTAINER_NAME);
+    verifyNoMoreInteractions(podControllersClientMock);
   }
 
   @Test
@@ -135,6 +137,7 @@ class EnvironmentsClientTest {
         ENV, NAMESPACE, PodControllerType.DEPLOYMENT, APP_LABEL, CONTAINER_NAME);
 
     verify(podsClientMock).getPods(NAMESPACE, APP_LABEL, emptyMap(), CONTAINER_NAME);
+    verifyNoMoreInteractions(podsClientMock);
   }
 
   @Test
@@ -157,10 +160,11 @@ class EnvironmentsClientTest {
     verify(podControllersClientMock)
         .getDeployment(
             NAMESPACE, Map.of("app", "appLabel", "canary", "enabled"), emptyMap(), CONTAINER_NAME);
+    verifyNoMoreInteractions(podControllersClientMock);
   }
 
   @Test
-  void podsClientIsCalledWithNamespaceAndCanaryMergedSelectorAndWithoutCanarySelector() {
+  void podsClientIsCalledWithNamespaceAndCanaryMergedSelectorAndAgainWithoutCanarySelector() {
     createNamespace(NAMESPACE);
     final PodsClient podsClientMock = mock(PodsClient.class);
 
@@ -179,6 +183,66 @@ class EnvironmentsClientTest {
     verify(podsClientMock)
         .getPods(
             NAMESPACE, Map.of("app", "appLabel", "canary", "enabled"), emptyMap(), CONTAINER_NAME);
+    verifyNoMoreInteractions(podsClientMock);
+  }
+
+  @Test
+  void
+      podControllersClientIsCalledWithNamespaceAndCanaryAppendedSelectorAndAgainWithoutCanarySelector() {
+    createNamespace(NAMESPACE);
+    final PodControllersClient podControllersClientMock = mock(PodControllersClient.class);
+
+    final CanaryConfiguration canaryConfiguration =
+        new CanaryConfiguration(true, Map.of("canary", "misconfiguration"));
+    canaryConfiguration.setAppendSuffix("-suffix");
+    environmentsClient =
+        new EnvironmentsClient(
+            server.getClient(),
+            podControllersClientMock,
+            new PodsClientStub(server.getClient()),
+            canaryConfiguration);
+
+    environmentsClient.getEnvironment(
+        ENV, NAMESPACE, PodControllerType.DEPLOYMENT, APP_LABEL, CONTAINER_NAME);
+
+    verify(podControllersClientMock)
+        .getDeployment(
+            NAMESPACE,
+            Map.of("app", "appLabel"),
+            Map.of("canary", "misconfiguration"),
+            CONTAINER_NAME);
+    verify(podControllersClientMock)
+        .getDeployment(NAMESPACE, Map.of("app", "appLabel-suffix"), emptyMap(), CONTAINER_NAME);
+    verifyNoMoreInteractions(podControllersClientMock);
+  }
+
+  @Test
+  void podsClientIsCalledWithNamespaceAndCanaryAppendedSelectorAndAgainWithoutCanarySelector() {
+    createNamespace(NAMESPACE);
+    final PodsClient podsClientMock = mock(PodsClient.class);
+
+    final CanaryConfiguration canaryConfiguration =
+        new CanaryConfiguration(true, Map.of("canary", "misconfiguration"));
+    canaryConfiguration.setAppendSuffix("-suffix");
+    environmentsClient =
+        new EnvironmentsClient(
+            server.getClient(),
+            new PodControllersClientStub(server.getClient()),
+            podsClientMock,
+            canaryConfiguration);
+
+    environmentsClient.getEnvironment(
+        ENV, NAMESPACE, PodControllerType.DEPLOYMENT, APP_LABEL, CONTAINER_NAME);
+
+    verify(podsClientMock)
+        .getPods(
+            NAMESPACE,
+            Map.of("app", "appLabel"),
+            Map.of("canary", "misconfiguration"),
+            CONTAINER_NAME);
+    verify(podsClientMock)
+        .getPods(NAMESPACE, Map.of("app", "appLabel-suffix"), emptyMap(), CONTAINER_NAME);
+    verifyNoMoreInteractions(podsClientMock);
   }
 
   private void createNamespace(String namespace) {

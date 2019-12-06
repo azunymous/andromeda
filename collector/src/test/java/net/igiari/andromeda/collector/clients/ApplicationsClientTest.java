@@ -1,8 +1,11 @@
 package net.igiari.andromeda.collector.clients;
 
 import static java.util.Collections.singletonList;
+import static net.igiari.andromeda.collector.cluster.PodControllerType.DEPLOYMENT;
 import static net.igiari.andromeda.collector.config.CanaryConfiguration.defaultCanaryConfiguration;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 import java.util.ArrayList;
@@ -44,8 +47,7 @@ class ApplicationsClientTest {
     stubbedEnvironmentsClient = new StubbedEnvironmentsClient();
     stubbedPriorityConfig = new StubbedPriorityConfig();
     applicationsClient =
-        new ApplicationsClient(
-            server.getClient(), stubbedEnvironmentsClient, stubbedPriorityConfig);
+        new ApplicationsClient(stubbedEnvironmentsClient, "app", stubbedPriorityConfig);
   }
 
   @Test
@@ -63,11 +65,28 @@ class ApplicationsClientTest {
   }
 
   @Test
+  void getApplicationsCallsEnvironmentsClientWithCorrectValuesAndDefaultSelector() {
+    ApplicationConfig applicationConfig = new ApplicationConfig();
+    applicationConfig.setName("appName");
+    applicationConfig.setDeployment("container");
+    applicationConfig.setPrefix("namespacePrefix");
+    final EnvironmentsClient environmentsClientMock = mock(EnvironmentsClient.class);
+    applicationsClient =
+        new ApplicationsClient(environmentsClientMock, "app", stubbedPriorityConfig);
+
+    applicationsClient.getApplication(applicationConfig, singletonList("-env-1"));
+
+    verify(environmentsClientMock)
+        .getEnvironment(
+            "-env-1", "namespacePrefix-env-1", DEPLOYMENT, Map.of("app", "appName"), "container");
+  }
+
+  @Test
   void environmentPriority() {
     applicationsClient =
         new ApplicationsClient(
-            server.getClient(),
             stubbedEnvironmentsClient,
+            "app",
             new StubbedPriorityConfig(
                 Arrays.asList("env-3", "env-4", "env-6"), Arrays.asList("env-0", "env-1")));
 

@@ -1,6 +1,5 @@
 package net.igiari.andromeda.collector.clients;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,16 +9,17 @@ import net.igiari.andromeda.collector.config.ApplicationConfig;
 import net.igiari.andromeda.collector.config.PriorityConfig;
 
 public class ApplicationsClient {
-  private KubernetesClient kubernetesClient;
+
   private final EnvironmentsClient environmentsClient;
+  private final String defaultSelectorKey;
   private PriorityConfig priorityConfig;
 
   public ApplicationsClient(
-      KubernetesClient kubernetesClient,
       EnvironmentsClient environmentsClient,
+      String defaultSelectorKey,
       PriorityConfig priorityConfig) {
-    this.kubernetesClient = kubernetesClient;
     this.environmentsClient = environmentsClient;
+    this.defaultSelectorKey = defaultSelectorKey;
     this.priorityConfig = priorityConfig;
   }
 
@@ -34,7 +34,7 @@ public class ApplicationsClient {
                         namespaceSuffix,
                         namespaceNameFrom(applicationConfig, namespaceSuffix),
                         applicationConfig.getControllerType(),
-                        applicationConfig.getSelector(),
+                        applicationConfig.getSelectorOrDefault(defaultSelectorKey),
                         applicationConfig.getContainerName()))
             .flatMap(Optional::stream)
             .sorted(this::environmentPriority)

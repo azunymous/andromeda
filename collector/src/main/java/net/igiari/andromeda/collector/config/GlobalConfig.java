@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 public class GlobalConfig {
   private List<TeamConfig> teams;
   private CanaryConfiguration canary = defaultCanaryConfiguration();
+  private String defaultSelectorKey = "app";
 
   public GlobalConfig() {}
 
@@ -28,5 +29,13 @@ public class GlobalConfig {
 
   public void setCanary(CanaryConfiguration canary) {
     this.canary = canary;
+  }
+
+  public String getDefaultSelectorKey() {
+    return defaultSelectorKey;
+  }
+
+  public void setDefaultSelectorKey(String defaultSelectorKey) {
+    this.defaultSelectorKey = defaultSelectorKey;
   }
 }

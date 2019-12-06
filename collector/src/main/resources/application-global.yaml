@@ -1,10 +1,16 @@
 global:
+  #  Sets the default key for when selectors are not configured. Defaults to 'app'.
+  defaultSelectorKey: app
+
   canary:
     enabled: true
-#   Labels used to determine if a pod is marked as a canary
-#   These labels are also explicitly not selected for normal deployments if canaries are enabled.
+    # Labels used to determine if a pod is marked as a canary
+    # These labels are also explicitly not selected for normal deployments if canaries are enabled.
     selector:
       variant: canary
+  #  Appends the suffix to the non-canary selector instead of using the canary selector
+  #  If this is setting is configured, the canary selector is still used to not select canaries for normal deployments.
+  #  appendSuffix: -canary
 
   teams:
     - name: teamName
@@ -27,6 +33,6 @@ global:
       applications:
         - name: collector
           prefix: andromeda
-#         selector is defaulted to 'app = application name' - in this case app=collector
+#         selector is defaulted to '<default selector key> = <application name>' - in this case app=collector
 #         The type of controller can be specified and must be set to the container name
 #         An unset controller:container config is defaulted to a deployment and to the first container

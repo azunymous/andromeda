@@ -33,7 +33,8 @@ public class AndromedaController {
         new EnvironmentsClient(
             kubernetesClient, podControllersClient, podsClient, globalConfig.getCanary());
     ApplicationsClient applicationsClient =
-        new ApplicationsClient(kubernetesClient, environmentsClient, clusterConfig.getPriority());
+        new ApplicationsClient(
+            environmentsClient, globalConfig.getDefaultSelectorKey(), clusterConfig.getPriority());
     this.teamsClient = new TeamsClient(globalConfig, clusterConfig, applicationsClient);
   }
 

@@ -7,7 +7,9 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import net.igiari.andromeda.collector.cluster.Environment;
 import net.igiari.andromeda.collector.cluster.PodController;
 import net.igiari.andromeda.collector.cluster.PodControllerType;
@@ -53,8 +55,12 @@ public class EnvironmentsClient {
         new Environment(environmentName, namespaceName, podController.orElse(empty()));
 
     if (canaryConfiguration.isEnabled()) {
-      Map<String, String> canarySelector = new HashMap<>(selector);
-      canaryConfiguration.getSelector().forEach((k, v) -> canarySelector.merge(k, v, (a, b) -> b));
+      Map<String, String> canarySelector =
+          canaryConfiguration
+              .getAppendSuffix()
+              .map(suffix -> appendToSelector(selector, suffix))
+              .orElseGet(() -> mergeSelector(selector));
+
       Optional<PodController> canary =
           getPodController(namespaceName, type, canarySelector, emptyMap(), containerName);
       canary.ifPresent(
@@ -65,6 +71,19 @@ public class EnvironmentsClient {
     }
 
     return Optional.of(environment);
+  }
+
+  private Map<String, String> appendToSelector(Map<String, String> selector, String suffix) {
+    return selector
+        .entrySet()
+        .stream()
+        .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().concat(suffix)));
+  }
+
+  private Map<String, String> mergeSelector(Map<String, String> selector) {
+    Map<String, String> canarySelector = new HashMap<>(selector);
+    canaryConfiguration.getSelector().forEach((k, v) -> canarySelector.merge(k, v, (a, b) -> b));
+    return canarySelector;
   }
 
   private Optional<PodController> getPodController(
