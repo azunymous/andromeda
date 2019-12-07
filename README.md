@@ -156,14 +156,20 @@ The `teams` can be configured for front end indexing. The `prometheusURI` is req
 
 Currently this information is gleamed from prometheus metrics: `feature_flag` and `downstream_dependency`, with the aggregator
 expecting `pod_name` and `namespace` labels matching the pod they're coming from. (This comes for free with Prometheus 
-service discovery and just needs to be relabeled.). 
+service discovery and just needs to be relabeled.). The aggregator will need a prometheus instance to query. The prometheus
+instance should federate the stated labels from other prometheus instances.
+
+The dependency metric should be a gauge with the name `downstream_dependency`, with the above mentioned labels along with the `dependency_name` 
+label set to the name of the dependency. `0` for down and `1` for up.  
+
+The feature flag metric should be a gauge with the name `feature_flag`, with the above mentioned labels along with the `feature_flag_name` 
+label set to the name of the feature flag. A range of `-1` to `2` will be shown, each with a varying color. 
 
 The `prometheusURI` in the aggregator configuration should point to the prometheus API and to a prometheus that federates
 all application downstream_dependency and feature_flag metrics.
 
-Only dependencies are visible on the front end at this time.
-
 ---
+
 #### Miscellaneous configuration
 _If these settings need to be configured, it usually means your selectors aren't queryable or specify identifying 
 attributes of objects that are meaningful and relevant to users._
