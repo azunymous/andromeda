@@ -105,7 +105,7 @@ class ApplicationsClientTest {
 
   private class StubbedEnvironmentsClient extends EnvironmentsClient {
     StubbedEnvironmentsClient() {
-      super(null, null, null, defaultCanaryConfiguration());
+      super(null, null, null, null, defaultCanaryConfiguration());
     }
 
     @Override

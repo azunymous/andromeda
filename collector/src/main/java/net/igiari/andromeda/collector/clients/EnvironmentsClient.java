@@ -19,16 +19,19 @@ public class EnvironmentsClient {
   private KubernetesClient kubernetesClient;
   private PodControllersClient podControllersClient;
   private PodsClient podsClient;
+  private IngressClient ingressClient;
   private CanaryConfiguration canaryConfiguration;
 
   public EnvironmentsClient(
       KubernetesClient kubernetesClient,
       PodControllersClient podControllersClient,
       PodsClient podsClient,
+      IngressClient ingressClient,
       CanaryConfiguration canaryConfiguration) {
     this.kubernetesClient = kubernetesClient;
     this.podControllersClient = podControllersClient;
     this.podsClient = podsClient;
+    this.ingressClient = ingressClient;
     this.canaryConfiguration = canaryConfiguration;
   }
 
@@ -69,6 +72,8 @@ public class EnvironmentsClient {
                   podsClient.getPods(namespaceName, canarySelector, emptyMap(), containerName)));
       canary.ifPresent(environment::setCanaryPodController);
     }
+
+    environment.setIngresses(ingressClient.getIngresses(namespaceName));
 
     return Optional.of(environment);
   }

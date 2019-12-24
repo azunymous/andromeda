@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import net.igiari.andromeda.collector.cluster.Environment;
@@ -36,11 +37,16 @@ class EnvironmentsClientTest {
   void setUp() {
     server.before();
     PodControllersClientStub podControllersStub = new PodControllersClientStub(server.getClient());
-
     PodsClient podsClientStub = new PodsClientStub(server.getClient());
+    IngressClient ingressClient = new IngressClientStub(server.getClient());
+
     environmentsClient =
         new EnvironmentsClient(
-            server.getClient(), podControllersStub, podsClientStub, defaultCanaryConfiguration());
+            server.getClient(),
+            podControllersStub,
+            podsClientStub,
+            ingressClient,
+            defaultCanaryConfiguration());
   }
 
   @Test
@@ -75,6 +81,7 @@ class EnvironmentsClientTest {
             server.getClient(),
             new PodControllersClientStub(server.getClient()),
             new PodsClientStub(server.getClient()),
+            new IngressClientStub(server.getClient()),
             new CanaryConfiguration(true, Map.of("canary", "enabled")));
 
     Optional<Environment> gotEnvironment =
@@ -111,6 +118,7 @@ class EnvironmentsClientTest {
             server.getClient(),
             podControllersClientMock,
             new PodsClientStub(server.getClient()),
+            new IngressClientStub(server.getClient()),
             defaultCanaryConfiguration());
 
     environmentsClient.getEnvironment(
@@ -131,6 +139,7 @@ class EnvironmentsClientTest {
             server.getClient(),
             new PodControllersClientStub(server.getClient()),
             podsClientMock,
+            new IngressClientStub(server.getClient()),
             defaultCanaryConfiguration());
 
     environmentsClient.getEnvironment(
@@ -150,6 +159,7 @@ class EnvironmentsClientTest {
             server.getClient(),
             podControllersClientMock,
             new PodsClientStub(server.getClient()),
+            new IngressClientStub(server.getClient()),
             new CanaryConfiguration(true, Map.of("canary", "enabled")));
 
     environmentsClient.getEnvironment(
@@ -173,6 +183,7 @@ class EnvironmentsClientTest {
             server.getClient(),
             new PodControllersClientStub(server.getClient()),
             podsClientMock,
+            new IngressClientStub(server.getClient()),
             new CanaryConfiguration(true, Map.of("canary", "enabled")));
 
     environmentsClient.getEnvironment(
@@ -200,6 +211,7 @@ class EnvironmentsClientTest {
             server.getClient(),
             podControllersClientMock,
             new PodsClientStub(server.getClient()),
+            new IngressClientStub(server.getClient()),
             canaryConfiguration);
 
     environmentsClient.getEnvironment(
@@ -229,6 +241,7 @@ class EnvironmentsClientTest {
             server.getClient(),
             new PodControllersClientStub(server.getClient()),
             podsClientMock,
+            new IngressClientStub(server.getClient()),
             canaryConfiguration);
 
     environmentsClient.getEnvironment(
@@ -243,6 +256,41 @@ class EnvironmentsClientTest {
     verify(podsClientMock)
         .getPods(NAMESPACE, Map.of("app", "appLabel-suffix"), emptyMap(), CONTAINER_NAME);
     verifyNoMoreInteractions(podsClientMock);
+  }
+
+  @Test
+  void ingressClientIsCalled() {
+    createNamespace(NAMESPACE);
+    final IngressClient ingressClientMock = mock(IngressClient.class);
+
+    environmentsClient =
+        new EnvironmentsClient(
+            server.getClient(),
+            new PodControllersClientStub(server.getClient()),
+            new PodsClientStub(server.getClient()),
+            ingressClientMock,
+            defaultCanaryConfiguration());
+
+    final Optional<Environment> environment =
+        environmentsClient.getEnvironment(
+            ENV, NAMESPACE, PodControllerType.DEPLOYMENT, APP_LABEL, CONTAINER_NAME);
+
+    verify(ingressClientMock).getIngresses(NAMESPACE);
+    verifyNoMoreInteractions(ingressClientMock);
+  }
+
+  @Test
+  void ingressesAreAddedToEnvironment() {
+    createNamespace(NAMESPACE);
+
+    final Optional<Environment> environment =
+        environmentsClient.getEnvironment(
+            ENV, NAMESPACE, PodControllerType.DEPLOYMENT, APP_LABEL, CONTAINER_NAME);
+
+    assertThat(environment)
+        .get()
+        .extracting(Environment::getIngresses)
+        .isEqualTo(List.of("foo.bar.com/path"));
   }
 
   private void createNamespace(String namespace) {
@@ -290,6 +338,18 @@ class EnvironmentsClientTest {
   private class PodsClientStub extends PodsClient {
     public PodsClientStub(KubernetesClient kubernetesClient) {
       super(kubernetesClient);
+    }
+  }
+
+  private class IngressClientStub extends IngressClient {
+
+    public IngressClientStub(KubernetesClient client) {
+      super(client);
+    }
+
+    @Override
+    public List<String> getIngresses(String namespaceName) {
+      return List.of("foo.bar.com/path");
     }
   }
 }

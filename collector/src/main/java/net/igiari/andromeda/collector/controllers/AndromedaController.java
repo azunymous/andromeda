@@ -4,6 +4,7 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import net.igiari.andromeda.collector.clients.ApplicationsClient;
 import net.igiari.andromeda.collector.clients.Client;
 import net.igiari.andromeda.collector.clients.EnvironmentsClient;
+import net.igiari.andromeda.collector.clients.IngressClient;
 import net.igiari.andromeda.collector.clients.PodControllersClient;
 import net.igiari.andromeda.collector.clients.PodsClient;
 import net.igiari.andromeda.collector.clients.TeamsClient;
@@ -29,9 +30,14 @@ public class AndromedaController {
     KubernetesClient kubernetesClient = client.getKubernetesClient();
     PodControllersClient podControllersClient = new PodControllersClient(kubernetesClient);
     PodsClient podsClient = new PodsClient(kubernetesClient);
+    IngressClient ingressClient = new IngressClient(kubernetesClient);
     EnvironmentsClient environmentsClient =
         new EnvironmentsClient(
-            kubernetesClient, podControllersClient, podsClient, globalConfig.getCanary());
+            kubernetesClient,
+            podControllersClient,
+            podsClient,
+            ingressClient,
+            globalConfig.getCanary());
     ApplicationsClient applicationsClient =
         new ApplicationsClient(
             environmentsClient, globalConfig.getDefaultSelectorKey(), clusterConfig.getPriority());

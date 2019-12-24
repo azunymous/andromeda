@@ -1,5 +1,6 @@
 package net.igiari.andromeda.collector.cluster;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Environment {
@@ -7,6 +8,7 @@ public class Environment {
   private final String namespaceName;
   private final PodController podController;
   private PodController canaryPodController;
+  private List<String> ingresses;
 
   public Environment(String environmentName, String namespaceName, PodController podController) {
     this.environmentName = environmentName;
@@ -73,5 +75,13 @@ public class Environment {
         + ", canaryPodController="
         + canaryPodController
         + '}';
+  }
+
+  public List<String> getIngresses() {
+    return ingresses;
+  }
+
+  public void setIngresses(List<String> ingresses) {
+    this.ingresses = ingresses;
   }
 }
