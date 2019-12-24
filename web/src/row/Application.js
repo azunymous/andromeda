@@ -1,5 +1,5 @@
-import React from 'react'
-import {Badge, Button} from "reactstrap";
+import React, {useState} from 'react'
+import {Badge, Button,  Modal, ModalHeader, ModalBody, ModalFooter} from "reactstrap";
 
 import canaryImage from "./canary.svg"
 
@@ -16,13 +16,18 @@ function Application({application, headers, mode}) {
 }
 
 function Environment({index, environment, headers, mode}) {
+    const [modal, setModal] = useState(false);
+
+    const toggle = () => setModal(!modal);
+
     if (mode === "CONTROLLER" && environment["environmentName"] === headers[index]) {
         return (
             <td className={environment["podController"]["status"]}>
-                <Button size="lg" block
+                <Button onClick={toggle} size="lg" block
                         color={colorFrom(environment["podController"]["status"])}> {environment["podController"]["version"]}
                     {showCanary(environment["canaryPodController"])}
                 </Button>
+                <NamespaceInfo modal={modal} toggle={toggle} ingresses={environment["ingresses"]} namespaceName={environment["namespaceName"]}/>
             </td>
         )
     } else if ((mode === "POD" || mode === "DEPENDENCY") && environment["environmentName"] === headers[index]) {
@@ -36,6 +41,24 @@ function Environment({index, environment, headers, mode}) {
 
     return (
         <td className={"EMPTY"}/>
+    )
+}
+
+function NamespaceInfo({modal, toggle, namespaceName, ingresses}) {
+    return (
+        <Modal isOpen={modal} toggle={toggle} className={"namespaceInfo"}>
+            <ModalHeader toggle={toggle}>{namespaceName}</ModalHeader>
+            <ModalBody>
+                <h6>Ingresses:</h6>
+                {ingresses.map((ingress, index) => {
+                    return (
+                        <div key={index}>
+                            <code>{ingress}</code>
+                        </div>
+                    )
+                })}
+              </ModalBody>
+        </Modal>
     )
 }
 
