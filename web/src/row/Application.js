@@ -105,7 +105,7 @@ function Pods({pods, dependencies, canary}) {
 }
 
 function Dependencies({enabled, dependencies}) {
-    if (enabled) {
+    if (enabled && dependencies !== undefined) {
         return (
             <div>
                 {dependencies.map((dependency, index) => {
@@ -119,7 +119,7 @@ function Dependencies({enabled, dependencies}) {
 }
 
 function FeatureFlags({enabled, featureFlags}) {
-    if (enabled) {
+    if (enabled && featureFlags !== undefined) {
         return (
             <div>
                 {featureFlags.map((featureFlag, index) => {
