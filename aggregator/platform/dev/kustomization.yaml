@@ -7,6 +7,7 @@ resources:
   - prometheus/prometheus-deployment.yaml
   - prometheus/prometheus-service.yaml
   - prometheus/prometheus-ingress.yaml
+  - ingress.yaml
 configMapGenerator:
   - name: aggregator-config
     files:
