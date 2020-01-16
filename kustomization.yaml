@@ -5,4 +5,4 @@ resources:
   - namespace.yml
   - collector/platform/dev
   - aggregator/platform/dev
-  - web/platform/base
+  - web/platform/dev

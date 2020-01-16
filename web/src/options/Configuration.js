@@ -1,6 +1,6 @@
 class Config {
     static getAPIURL() {
-        return process.env.REACT_APP_API_URL || ""
+        return window['config']['apiUrl'] || process.env.REACT_APP_API_URL ||""
     }
 }
 

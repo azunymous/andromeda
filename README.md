@@ -21,7 +21,18 @@ Configuration can be mounted as files via config maps and specified via environm
 
 The web front end can be built with the given Dockerfile - `docker build web/`. _This requires docker._
 
-Before building the image, modify the [production env](./web/.env.production) to contain your aggregator's API URL.
+There are two ways to set API URL for the frontend. 
+- At runtime this can be set via a config.js file. 
+For the provided NGNIX Docker image, the config would go in `/usr/share/nginx/html/config/config.js` and can be mounted
+as a config map in this directory as seen in this [kustomization](./web/platform/dev/deployment-config.yaml).
+```javascript
+// Example config for a minikube deployment:
+window['config'] = {
+  apiUrl: 'http://igiari.local/aggregator'
+}
+```
+- Before building the docker image, the API URL can be set by modifying creating an `.env.production` at the root of the web folder 
+which contains your aggregator's API URL:
 ```dotenv
 REACT_APP_API_URL=http://my.aggregator.com
 ``` 
